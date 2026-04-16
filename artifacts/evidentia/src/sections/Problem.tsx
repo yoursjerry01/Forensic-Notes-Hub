@@ -1,42 +1,105 @@
 import { motion } from "framer-motion";
+import { X, Check } from "lucide-react";
 
-const lines = [
-  { text: "Scattered notes waste your time.", border: true },
-  { text: "Most material is incomplete or too complex.", border: true },
-  { text: "Evidentia simplifies forensic science into structured notes.", border: false, highlight: true },
+const problems = [
+  "Scattered notes waste your time.",
+  "Material is incomplete or too complex.",
+  "No structure for exam preparation.",
+];
+
+const solutions = [
+  "Subject & semester-wise organisation.",
+  "Clear, distilled, exam-focused content.",
+  "Built around how students actually study.",
 ];
 
 export function Problem() {
   return (
-    <section className="py-24 bg-teal-900 text-white">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center max-w-4xl">
-        <motion.h2
-          initial={{ opacity: 0, y: 24 }}
+    <section className="py-24 bg-white overflow-hidden">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.55, ease: "easeOut" }}
-          className="text-3xl md:text-4xl font-bold mb-12"
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="text-center mb-14"
         >
-          The typical student experience.
-        </motion.h2>
+          <span className="inline-block text-xs font-semibold tracking-widest uppercase text-gray-400 mb-4">
+            The Problem
+          </span>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
+            The typical student experience.
+          </h2>
+        </motion.div>
 
-        <div className="space-y-6 text-xl md:text-2xl font-light opacity-90">
-          {lines.map((line, i) => (
-            <motion.p
-              key={i}
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: "-40px" }}
-              transition={{ duration: 0.5, ease: "easeOut", delay: i * 0.15 }}
-              className={[
-                line.border ? "border-b border-teal-800 pb-6" : "pt-2",
-                line.highlight ? "font-medium text-white" : "",
-              ].join(" ")}
-            >
-              {line.text}
-            </motion.p>
-          ))}
+        <div className="grid md:grid-cols-2 gap-4 md:gap-6">
+          {/* Before column */}
+          <motion.div
+            initial={{ opacity: 0, x: -40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.55, ease: "easeOut" }}
+            className="rounded-2xl bg-gray-50 border border-gray-200 p-8"
+          >
+            <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-6">Without Evidentia</p>
+            <ul className="space-y-4">
+              {problems.map((p, i) => (
+                <motion.li
+                  key={i}
+                  initial={{ opacity: 0, x: -16 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: 0.1 + i * 0.1 }}
+                  className="flex items-start gap-3 text-gray-500"
+                >
+                  <span className="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full bg-red-100 flex items-center justify-center">
+                    <X className="w-3 h-3 text-red-500" />
+                  </span>
+                  <span className="text-sm leading-relaxed line-through decoration-gray-300">{p}</span>
+                </motion.li>
+              ))}
+            </ul>
+          </motion.div>
+
+          {/* After column */}
+          <motion.div
+            initial={{ opacity: 0, x: 40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.55, ease: "easeOut", delay: 0.1 }}
+            className="rounded-2xl bg-teal-900 border border-teal-800 p-8"
+          >
+            <p className="text-xs font-bold uppercase tracking-widest text-teal-400 mb-6">With Evidentia</p>
+            <ul className="space-y-4">
+              {solutions.map((s, i) => (
+                <motion.li
+                  key={i}
+                  initial={{ opacity: 0, x: 16 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: 0.2 + i * 0.1 }}
+                  className="flex items-start gap-3 text-white"
+                >
+                  <span className="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full bg-teal-500/20 flex items-center justify-center">
+                    <Check className="w-3 h-3 text-teal-400" />
+                  </span>
+                  <span className="text-sm leading-relaxed">{s}</span>
+                </motion.li>
+              ))}
+            </ul>
+          </motion.div>
         </div>
+
+        {/* Bottom statement */}
+        <motion.p
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="text-center text-gray-500 text-sm mt-10"
+        >
+          Evidentia is built for forensic science students who want to study smarter, not harder.
+        </motion.p>
       </div>
     </section>
   );
