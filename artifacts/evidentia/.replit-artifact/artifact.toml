@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Evidentia - Coming Soon"
+version = "1.0.0"
+id = "artifacts/evidentia"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 21651
+
+[services.development]
+run = "pnpm --filter @workspace/evidentia run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/evidentia", "run", "build" ]
+publicDir = "artifacts/evidentia/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "21651"
+BASE_PATH = "/"
