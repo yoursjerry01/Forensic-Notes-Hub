@@ -7,7 +7,6 @@ import { About } from "./sections/About";
 import { Features } from "./sections/Features";
 import { Problem } from "./sections/Problem";
 import { Incentives } from "./sections/Incentives";
-import { FinalCTA } from "./sections/FinalCTA";
 import { Footer } from "./sections/Footer";
 
 const queryClient = new QueryClient();
@@ -22,7 +21,6 @@ function App() {
           <Features />
           <Problem />
           <Incentives />
-          <FinalCTA />
           <Footer />
         </div>
         <Toaster />

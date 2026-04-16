@@ -30,9 +30,13 @@ export function useEmailSignup() {
 
       setStatus('success');
     } catch (err: any) {
-      console.error('Error submitting email:', err);
       setStatus('error');
-      setErrorMessage(err.message || 'Something went wrong. Please try again.');
+      const msg = err?.message ?? '';
+      if (msg.includes('supabaseUrl') || msg.includes('environment')) {
+        setErrorMessage('Sign-ups are not available yet. Check back soon.');
+      } else {
+        setErrorMessage(msg || 'Something went wrong. Please try again.');
+      }
     }
   };
 
