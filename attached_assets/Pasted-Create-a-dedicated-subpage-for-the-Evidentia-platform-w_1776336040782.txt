@@ -1,0 +1,172 @@
+Create a dedicated subpage for the Evidentia platform where students can submit their college syllabus and academic documents.
+
+Page Name:
+"Submit Syllabus"
+
+Purpose:
+Allow students to upload their syllabus so the platform can create accurate, structured forensic science notes.
+
+---
+
+### DESIGN STYLE
+
+• Same branding as main site (Evidentia)
+• Minimal, clean, academic UI
+• White background, dark text
+• Single accent color (deep blue / forensic teal)
+• Professional and distraction-free
+
+---
+
+### PAGE STRUCTURE
+
+1. Header Section
+• Title:
+  "Submit Your College Syllabus"
+• Subtitle:
+  "Help us build accurate notes based on your actual curriculum."
+
+---
+
+2. Instructions Section
+
+• Upload official syllabus only (college-issued)
+• Supported formats:
+  PDF, JPG, JPEG, PNG, DOC, DOCX
+• File must be clear and readable
+• One syllabus per submission
+• Max file size: 25MB
+
+---
+
+3. Submission Form
+
+Fields:
+
+• Full Name (required)
+• Email (required)
+
+• Course Type:
+  Dropdown options:
+  - B.Sc Forensic Science
+  - M.Sc Forensic Science
+  - Other
+
+• If "Other" selected:
+  → Show input field:
+    "Enter your course name"
+
+• Year / Semester (dropdown):
+  - Year 1 / Sem 1
+  - Year 1 / Sem 2
+  - Year 2 / Sem 3
+  - Year 2 / Sem 4
+  - Year 3 / Sem 5
+  - Year 3 / Sem 6
+
+• College Name (required)
+
+• Subject (optional)
+
+• Upload File:
+  Accept:
+  .pdf, .jpg, .jpeg, .png, .doc, .docx
+
+• Optional Notes:
+  "Anything important about your syllabus"
+
+---
+
+4. Submit Button
+
+• Text: "Submit Syllabus"
+
+On click:
+• Validate required fields
+• Validate email format
+• Validate file type
+• Validate file size (< 25MB)
+
+---
+
+5. Success State
+
+• Message:
+  "Submission received. This helps us create better notes for your curriculum."
+
+• Optional line:
+  "You’ll get early access when notes for your syllabus are available."
+
+---
+
+### FUNCTIONAL REQUIREMENTS
+
+Use Supabase:
+
+1. Storage:
+• Bucket: syllabus_uploads
+
+2. Database table: syllabus_submissions
+
+Columns:
+• id (auto)
+• name
+• email
+• course
+• semester
+• college
+• subject
+• file_url
+• notes
+• created_at
+
+---
+
+### LOGIC
+
+1. Upload file to Supabase Storage
+2. Get file public URL
+3. Store form data + file URL in database
+
+---
+
+### VALIDATION
+
+• Email must be valid
+• File type must match allowed formats
+• File size must be less than 25MB
+• Required fields must not be empty
+
+---
+
+### UX DETAILS
+
+• Show loading state while submitting
+• Disable button during upload
+• Show clear success or error messages
+• Mobile responsive design
+
+---
+
+### OPTIONAL IMPROVEMENTS
+
+• Checkbox:
+  "I confirm this is an official syllabus"
+
+• Incentive line:
+  "Top contributors may get free access to notes"
+
+• Basic duplicate prevention:
+  Avoid same email + same file name submission
+
+---
+
+### OUTPUT
+
+Generate:
+• Full HTML page
+• CSS styling
+• JavaScript logic
+• Supabase integration (storage + database)
+
+Ready to deploy.
