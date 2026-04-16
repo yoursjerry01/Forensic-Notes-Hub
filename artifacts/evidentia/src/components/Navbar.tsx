@@ -10,14 +10,13 @@ export function Navbar() {
       transition={{ duration: 0.4, ease: "easeOut" }}
       className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100"
     >
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl flex items-center justify-between h-20">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl flex items-center justify-between h-16">
         <Link href="/">
-          {/* logo image has large white padding, so render big and clip with negative margin */}
           <img
             src="/logo.png"
             alt="Evidentia"
             className="cursor-pointer object-contain"
-            style={{ height: "110px", marginTop: "-20px", marginBottom: "-20px", marginLeft: "-12px" }}
+            style={{ width: "180px", height: "auto" }}
           />
         </Link>
 

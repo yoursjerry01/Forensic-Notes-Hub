@@ -154,7 +154,7 @@ export function SubmitSyllabus() {
           <Link href="/" className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-teal-700 transition-colors">
             <ArrowLeft className="w-4 h-4" /> Back
           </Link>
-          <img src="/logo.png" alt="Evidentia" className="h-8 w-auto object-contain" />
+          <img src="/logo.png" alt="Evidentia" className="object-contain" style={{ width: "140px", height: "auto" }} />
         </div>
       </div>
 
