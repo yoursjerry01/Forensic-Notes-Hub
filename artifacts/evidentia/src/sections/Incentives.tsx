@@ -1,41 +1,77 @@
 import { motion } from "framer-motion";
-import { CheckCircle2 } from "lucide-react";
+import { Zap, Tag, BookOpenCheck } from "lucide-react";
 
 const benefits = [
-  "Early access to all notes",
-  "Special launch pricing",
-  "Free sample notes",
+  {
+    icon: <Zap className="w-7 h-7 text-teal-400" />,
+    number: "01",
+    title: "Early Access",
+    description: "Get full access to all notes before anyone else — before the public launch.",
+  },
+  {
+    icon: <Tag className="w-7 h-7 text-teal-400" />,
+    number: "02",
+    title: "Launch Pricing",
+    description: "Lock in the lowest price we'll ever offer. Early supporters get the best deal.",
+  },
+  {
+    icon: <BookOpenCheck className="w-7 h-7 text-teal-400" />,
+    number: "03",
+    title: "Free Sample Notes",
+    description: "Download free sample notes immediately after joining the waitlist.",
+  },
 ];
 
 export function Incentives() {
   return (
-    <section className="py-20 bg-gray-50">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="max-w-2xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.97 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
-            className="bg-white rounded-2xl p-8 md:p-12 shadow-sm border border-gray-200"
-          >
-            <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center">Why join the waitlist?</h2>
-            <ul className="space-y-4">
-              {benefits.map((benefit, i) => (
-                <motion.li
-                  key={i}
-                  initial={{ opacity: 0, x: -20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true, margin: "-40px" }}
-                  transition={{ duration: 0.4, ease: "easeOut", delay: 0.1 + i * 0.1 }}
-                  className="flex items-center gap-4 text-lg text-gray-700"
-                >
-                  <CheckCircle2 className="w-6 h-6 text-teal-600 flex-shrink-0" />
-                  <span>{benefit}</span>
-                </motion.li>
-              ))}
-            </ul>
-          </motion.div>
+    <section className="py-24 bg-gray-950 text-white overflow-hidden">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.55, ease: "easeOut" }}
+          className="text-center mb-16"
+        >
+          <span className="inline-block text-xs font-semibold tracking-widest uppercase text-teal-400 mb-4">
+            Why Join Early
+          </span>
+          <h2 className="text-3xl md:text-4xl font-bold text-white">
+            The waitlist has its perks.
+          </h2>
+        </motion.div>
+
+        <div className="grid md:grid-cols-3 gap-6">
+          {benefits.map((b, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.5, ease: "easeOut", delay: i * 0.12 }}
+              whileHover={{ y: -4, transition: { duration: 0.2 } }}
+              className="relative group rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-8 overflow-hidden cursor-default"
+            >
+              {/* Subtle glow on hover */}
+              <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-teal-500/5" />
+
+              {/* Large faded number */}
+              <span className="absolute top-4 right-6 text-7xl font-black text-white/5 select-none leading-none">
+                {b.number}
+              </span>
+
+              {/* Icon */}
+              <div className="w-12 h-12 flex items-center justify-center rounded-xl bg-teal-500/10 border border-teal-500/20 mb-6">
+                {b.icon}
+              </div>
+
+              <h3 className="text-xl font-bold text-white mb-3">{b.title}</h3>
+              <p className="text-gray-400 text-sm leading-relaxed">{b.description}</p>
+
+              {/* Bottom accent line */}
+              <div className="absolute bottom-0 left-0 h-0.5 w-0 group-hover:w-full bg-gradient-to-r from-teal-500 to-teal-300 transition-all duration-500 rounded-b-2xl" />
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>
