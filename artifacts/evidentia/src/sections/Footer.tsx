@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
 import { Mail, Instagram } from "lucide-react";
-import { Link } from "wouter";
 
 export function Footer() {
   return (
@@ -14,15 +13,6 @@ export function Footer() {
       >
         <h3 className="text-xl font-bold text-gray-900 tracking-tight mb-2">Evidentia</h3>
         <p className="text-gray-500 mb-6">Making forensic science simple and structured.</p>
-
-        <div className="mb-6">
-          <Link
-            href="/submit-syllabus"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-teal-700 text-white text-sm font-medium hover:bg-teal-800 transition-colors"
-          >
-            Submit Your Syllabus
-          </Link>
-        </div>
 
         <div className="flex items-center justify-center gap-4 mb-8">
           <a

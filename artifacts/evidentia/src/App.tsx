@@ -9,6 +9,7 @@ import { Features } from "./sections/Features";
 import { Problem } from "./sections/Problem";
 import { Incentives } from "./sections/Incentives";
 import { Footer } from "./sections/Footer";
+import { Navbar } from "./components/Navbar";
 import { SubmitSyllabus } from "./pages/SubmitSyllabus";
 
 const queryClient = new QueryClient();
@@ -16,6 +17,7 @@ const queryClient = new QueryClient();
 function Home() {
   return (
     <div className="min-h-screen w-full flex flex-col font-sans selection:bg-teal-100 selection:text-teal-900">
+      <Navbar />
       <Hero />
       <About />
       <Features />
