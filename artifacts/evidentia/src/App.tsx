@@ -1,38 +1,30 @@
-import { Switch, Route, Router as WouterRouter } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import NotFound from "@/pages/not-found";
+
+import { Hero } from "./sections/Hero";
+import { About } from "./sections/About";
+import { Features } from "./sections/Features";
+import { Problem } from "./sections/Problem";
+import { Incentives } from "./sections/Incentives";
+import { FinalCTA } from "./sections/FinalCTA";
+import { Footer } from "./sections/Footer";
 
 const queryClient = new QueryClient();
-
-function Home() {
-  return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gray-50">
-      <div className="text-center">
-        <h1 className="text-2xl font-bold text-gray-900">Replit Agent is building...</h1>
-        <p className="mt-2 text-sm text-gray-600">Your app will appear here once it's ready.</p>
-      </div>
-    </div>
-  );
-}
-
-function Router() {
-  return (
-    <Switch>
-      <Route path="/" component={Home} />
-      <Route component={NotFound} />
-    </Switch>
-  );
-}
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-          <Router />
-        </WouterRouter>
+        <div className="min-h-screen w-full flex flex-col font-sans selection:bg-teal-100 selection:text-teal-900">
+          <Hero />
+          <About />
+          <Features />
+          <Problem />
+          <Incentives />
+          <FinalCTA />
+          <Footer />
+        </div>
         <Toaster />
       </TooltipProvider>
     </QueryClientProvider>
