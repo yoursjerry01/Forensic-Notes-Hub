@@ -11,7 +11,6 @@ export function Footer() {
         transition={{ duration: 0.5, ease: "easeOut" }}
         className="container mx-auto px-4"
       >
-        <img src="/logo.png" alt="Evidentia" className="object-contain mx-auto mb-3" style={{ width: "200px", height: "auto" }} />
         <p className="text-gray-500 mb-6 text-sm">Making forensic science simple and structured.</p>
 
         <div className="flex items-center justify-center gap-4 mb-8">
