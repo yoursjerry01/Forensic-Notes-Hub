@@ -16,7 +16,7 @@ const queryClient = new QueryClient();
 
 function Home() {
   return (
-    <div className="min-h-screen w-full flex flex-col font-sans selection:bg-teal-100 selection:text-teal-900">
+    <div className="min-h-screen w-full flex flex-col font-sans selection:bg-blue-100 selection:text-blue-900">
       <Navbar />
       <Hero />
       <About />

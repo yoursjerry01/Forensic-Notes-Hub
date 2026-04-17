@@ -67,9 +67,9 @@ export function Problem() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-60px" }}
             transition={{ duration: 0.55, ease: "easeOut", delay: 0.1 }}
-            className="rounded-2xl bg-teal-900 border border-teal-800 p-8"
+            className="rounded-2xl bg-blue-900 border border-blue-800 p-8"
           >
-            <p className="text-xs font-bold uppercase tracking-widest text-teal-400 mb-6">With Evidentia</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-cyan-400 mb-6">With Evidentia</p>
             <ul className="space-y-4">
               {solutions.map((s, i) => (
                 <motion.li
@@ -80,8 +80,8 @@ export function Problem() {
                   transition={{ duration: 0.4, delay: 0.2 + i * 0.1 }}
                   className="flex items-start gap-3 text-white"
                 >
-                  <span className="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full bg-teal-500/20 flex items-center justify-center">
-                    <Check className="w-3 h-3 text-teal-400" />
+                  <span className="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full bg-cyan-500/20 flex items-center justify-center">
+                    <Check className="w-3 h-3 text-cyan-400" />
                   </span>
                   <span className="text-sm leading-relaxed">{s}</span>
                 </motion.li>
@@ -90,7 +90,6 @@ export function Problem() {
           </motion.div>
         </div>
 
-        {/* Bottom statement */}
         <motion.p
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}

@@ -97,7 +97,7 @@
   --popover-foreground: 222 10% 10%;
   --popover-border: 214 32% 91%;
   
-  --primary: 180 82% 27%; /* Teal: #0D7C7C */
+  --primary: 225 64% 33%; /* Navy blue: #1e3a8a */
   --primary-foreground: 0 0% 100%;
   --secondary: 210 40% 96%;
   --secondary-foreground: 222 47% 11%;
@@ -109,7 +109,7 @@
   --destructive-foreground: 0 0% 100%;
   
   --input: 214 32% 91%;
-  --ring: 180 82% 27%;
+  --ring: 225 64% 33%;
 
   --chart-1: 180 82% 27%;
   --chart-2: 173 58% 39%;
@@ -232,7 +232,7 @@
 }
 
 .cta-btn {
-  @apply bg-primary text-primary-foreground font-medium px-6 py-3 rounded-md hover:bg-teal-800 transition-colors shadow-sm disabled:opacity-70 disabled:cursor-not-allowed;
+  @apply bg-primary text-primary-foreground font-medium px-6 py-3 rounded-md hover:bg-blue-900 transition-colors shadow-sm disabled:opacity-70 disabled:cursor-not-allowed;
 }
 
 /**

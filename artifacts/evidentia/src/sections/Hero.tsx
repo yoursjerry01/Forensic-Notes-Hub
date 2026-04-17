@@ -16,7 +16,7 @@ export function Hero() {
           className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-gray-900 mb-6 max-w-4xl mx-auto leading-tight"
         >
           Forensic Science Notes, <br className="hidden sm:block" />
-          <span className="text-teal-700">Done Right.</span>
+          <span className="text-blue-800">Done Right.</span>
         </motion.h1>
 
         <motion.p

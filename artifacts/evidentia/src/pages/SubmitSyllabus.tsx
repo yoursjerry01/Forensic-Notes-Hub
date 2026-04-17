@@ -116,7 +116,7 @@ export function SubmitSyllabus() {
   }
 
   const inputClass =
-    "w-full px-4 py-2.5 rounded-lg border border-gray-200 bg-white text-gray-900 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500/40 focus:border-teal-500 transition-colors";
+    "w-full px-4 py-2.5 rounded-lg border border-gray-200 bg-white text-gray-900 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-700 transition-colors";
   const labelClass = "block text-sm font-medium text-gray-700 mb-1.5";
 
   if (status === "success") {
@@ -129,16 +129,16 @@ export function SubmitSyllabus() {
           className="text-center max-w-md"
         >
           <div className="w-16 h-16 rounded-full bg-teal-50 flex items-center justify-center mx-auto mb-6">
-            <CheckCircle className="w-8 h-8 text-teal-600" />
+            <CheckCircle className="w-8 h-8 text-blue-700" />
           </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-3">Submission received.</h2>
           <p className="text-gray-500 mb-2">
             This helps us create better notes for your curriculum.
           </p>
-          <p className="text-sm text-teal-700 font-medium mb-8">
+          <p className="text-sm text-blue-800 font-medium mb-8">
             You'll get early access when notes for your syllabus are available.
           </p>
-          <Link href="/" className="inline-flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-teal-700 transition-colors">
+          <Link href="/" className="inline-flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-blue-800 transition-colors">
             <ArrowLeft className="w-4 h-4" /> Back to Evidentia
           </Link>
         </motion.div>
@@ -151,7 +151,7 @@ export function SubmitSyllabus() {
       {/* Nav */}
       <div className="border-b border-gray-100 px-4 py-4">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
-          <Link href="/" className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-teal-700 transition-colors">
+          <Link href="/" className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-blue-800 transition-colors">
             <ArrowLeft className="w-4 h-4" /> Back
           </Link>
           <Link href="/">
@@ -168,7 +168,7 @@ export function SubmitSyllabus() {
           transition={{ duration: 0.45 }}
           className="mb-10"
         >
-          <span className="inline-block text-xs font-semibold tracking-widest uppercase text-teal-600 mb-3">
+          <span className="inline-block text-xs font-semibold tracking-widest uppercase text-blue-700 mb-3">
             Syllabus Submission
           </span>
           <h1 className="text-3xl font-bold text-gray-900 mb-3">
@@ -312,7 +312,7 @@ export function SubmitSyllabus() {
               onDragOver={e => e.preventDefault()}
               onDrop={e => { e.preventDefault(); handleFile(e.dataTransfer.files[0] ?? null); }}
               className={`relative cursor-pointer border-2 border-dashed rounded-xl p-6 text-center transition-colors ${
-                file ? "border-teal-400 bg-teal-50/40" : "border-gray-200 bg-gray-50 hover:border-teal-400 hover:bg-teal-50/30"
+                file ? "border-cyan-400 bg-blue-50/40" : "border-gray-200 bg-gray-50 hover:border-cyan-400 hover:bg-blue-50/30"
               }`}
             >
               <input
@@ -325,7 +325,7 @@ export function SubmitSyllabus() {
               />
               {file ? (
                 <div className="flex items-center justify-center gap-3">
-                  <FileText className="w-5 h-5 text-teal-600 flex-shrink-0" />
+                  <FileText className="w-5 h-5 text-blue-700 flex-shrink-0" />
                   <span className="text-sm text-gray-700 font-medium truncate max-w-xs">{file.name}</span>
                   <button
                     type="button"
@@ -339,7 +339,7 @@ export function SubmitSyllabus() {
                 <div>
                   <Upload className="w-6 h-6 text-gray-400 mx-auto mb-2" />
                   <p className="text-sm text-gray-500">
-                    <span className="text-teal-600 font-medium">Click to upload</span> or drag & drop
+                    <span className="text-blue-700 font-medium">Click to upload</span> or drag & drop
                   </p>
                   <p className="text-xs text-gray-400 mt-1">PDF, JPG, PNG, DOC, DOCX — max {MAX_SIZE_MB}MB</p>
                 </div>
@@ -370,7 +370,7 @@ export function SubmitSyllabus() {
               type="checkbox"
               checked={confirmed}
               onChange={e => setConfirmed(e.target.checked)}
-              className="mt-0.5 accent-teal-600"
+              className="mt-0.5 accent-blue-800"
               disabled={status === "loading"}
             />
             <span className="text-sm text-gray-600">
@@ -378,7 +378,7 @@ export function SubmitSyllabus() {
             </span>
           </label>
 
-          <p className="text-xs text-teal-700 font-medium">
+          <p className="text-xs text-blue-800 font-medium">
             Top contributors may get free access to notes.
           </p>
 
@@ -392,7 +392,7 @@ export function SubmitSyllabus() {
           <button
             type="submit"
             disabled={status === "loading" || !confirmed}
-            className="w-full py-3 rounded-xl bg-teal-700 text-white font-semibold text-sm hover:bg-teal-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="w-full py-3 rounded-xl bg-blue-800 text-white font-semibold text-sm hover:bg-blue-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {status === "loading" ? (
               <>

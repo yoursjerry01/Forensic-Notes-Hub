@@ -22,7 +22,7 @@ export function Navbar() {
 
         <Link
           href="/submit-syllabus"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-teal-700 text-white text-sm font-semibold hover:bg-teal-800 transition-colors shadow-sm"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-800 text-white text-sm font-semibold hover:bg-blue-900 transition-colors shadow-sm"
         >
           <FileUp className="w-4 h-4" />
           Submit Your Syllabus

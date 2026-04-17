@@ -18,8 +18,8 @@ export function EmailForm({ buttonText }: EmailFormProps) {
 
   if (status === 'success') {
     return (
-      <div className="flex items-center gap-2 p-4 text-teal-800 bg-teal-50 border border-teal-200 rounded-md font-medium">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-teal-600"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      <div className="flex items-center gap-2 p-4 text-blue-800 bg-blue-50 border border-blue-200 rounded-md font-medium">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-blue-700"><polyline points="20 6 9 17 4 12"></polyline></svg>
         You're In. We'll notify you soon.
       </div>
     );
@@ -34,7 +34,7 @@ export function EmailForm({ buttonText }: EmailFormProps) {
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Enter your email address"
           disabled={status === 'loading'}
-          className="flex-1 px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
+          className="flex-1 px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
           required
         />
         <button
