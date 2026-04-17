@@ -30,11 +30,15 @@ export function useEmailSignup() {
 
       setStatus('success');
     } catch (err: any) {
-      setStatus('error');
       const msg = err?.message ?? '';
+      const code = err?.code ?? '';
       if (msg.includes('supabaseUrl') || msg.includes('environment')) {
+        setStatus('error');
         setErrorMessage('Sign-ups are not available yet. Check back soon.');
+      } else if (code === '23505' || msg.includes('duplicate key') || msg.includes('unique constraint')) {
+        setStatus('success');
       } else {
+        setStatus('error');
         setErrorMessage(msg || 'Something went wrong. Please try again.');
       }
     }
