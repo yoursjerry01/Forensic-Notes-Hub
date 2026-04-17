@@ -77,39 +77,59 @@ export function SubmitSyllabus() {
     setStatus("loading");
 
     try {
+      // Step 1: Init client
       const supabase = getSupabase();
-      if (!supabase) throw new Error("Service unavailable. Try again later.");
 
+      // Step 2: Upload file
       const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-      const path = `${Date.now()}_${safeName}`;
+      const storagePath = `${Date.now()}_${safeName}`;
 
-      const { error: uploadError } = await supabase.storage
+      console.log("[Evidentia] Uploading file to storage...", storagePath);
+      const { data: uploadData, error: uploadError } = await supabase.storage
         .from("syllabus_uploads")
-        .upload(path, file, { upsert: false });
+        .upload(storagePath, file, { upsert: false });
 
-      if (uploadError) throw new Error(uploadError.message);
+      if (uploadError) {
+        console.error("[Evidentia] Upload failed:", uploadError);
+        throw new Error(`File upload failed: ${uploadError.message}`);
+      }
+      console.log("[Evidentia] Upload successful:", uploadData);
 
+      // Step 3: Get public URL
       const { data: urlData } = supabase.storage
         .from("syllabus_uploads")
-        .getPublicUrl(path);
+        .getPublicUrl(storagePath);
+
+      const fileUrl = urlData?.publicUrl;
+      if (!fileUrl) throw new Error("Could not retrieve file URL after upload.");
+      console.log("[Evidentia] Public URL:", fileUrl);
+
+      // Step 4: Insert row into database
+      const payload = {
+        name: name.trim(),
+        email: email.trim().toLowerCase(),
+        course: finalCourse,
+        semester,
+        college: college.trim(),
+        subject: subject.trim() || null,
+        file_url: fileUrl,
+        notes: notes.trim() || null,
+      };
+      console.log("[Evidentia] Inserting into syllabus_submissions:", payload);
 
       const { error: dbError } = await supabase
         .from("syllabus_submissions")
-        .insert({
-          name: name.trim(),
-          email: email.trim().toLowerCase(),
-          course: finalCourse,
-          semester,
-          college: college.trim(),
-          subject: subject.trim() || null,
-          file_url: urlData.publicUrl,
-          notes: notes.trim() || null,
-        });
+        .insert(payload);
 
-      if (dbError) throw new Error(dbError.message);
+      if (dbError) {
+        console.error("[Evidentia] DB insert failed:", dbError);
+        throw new Error(`Submission failed: ${dbError.message}`);
+      }
+      console.log("[Evidentia] DB insert successful.");
 
       setStatus("success");
     } catch (err: unknown) {
+      console.error("[Evidentia] Submit error:", err);
       setStatus("error");
       setErrorMsg(err instanceof Error ? err.message : "Something went wrong. Please try again.");
     }

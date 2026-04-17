@@ -1,0 +1,106 @@
+I have a syllabus submission form connected to Supabase.
+
+Current Issue:
+• File upload is working correctly (files are stored in Supabase Storage)
+• But form data (name, email, course, semester, college, etc.) is NOT being saved in the database table
+• Only the uploaded file exists, no metadata is stored
+
+I want to FIX this issue.
+
+---
+
+### REQUIREMENTS
+
+1. After file upload:
+   • Get the public URL of the uploaded file
+
+2. Insert ALL form data into Supabase table:
+   Table name: syllabus_submissions
+
+Columns:
+• name
+• email
+• course
+• semester
+• college
+• subject
+• file_url
+• notes
+• created_at
+
+---
+
+### IMPORTANT LOGIC FLOW
+
+Fix the code so it follows this exact sequence:
+
+Step 1:
+Validate all inputs (name, email, file, etc.)
+
+Step 2:
+Upload file to Supabase Storage (bucket: syllabus_uploads)
+
+Step 3:
+Get file public URL
+
+Step 4:
+Insert a new row into database with:
+• All form fields
+• file_url (from uploaded file)
+
+---
+
+### COMMON BUGS TO CHECK AND FIX
+
+• Missing `.insert()` query after upload  
+• Insert happening before file upload completes  
+• Wrong table name  
+• Column names mismatch  
+• Supabase client not initialized correctly  
+• Async/await not handled properly  
+• RLS blocking insert  
+• File upload works but database insert never called  
+
+---
+
+### ERROR HANDLING
+
+• If file upload fails → show error and stop  
+• If database insert fails → show error and log it  
+• Only show success message if BOTH steps succeed  
+
+---
+
+### OUTPUT REQUIREMENTS
+
+Provide:
+• Correct JavaScript code for:
+  - File upload
+  - Getting public URL
+  - Inserting form data
+• Clean async/await structure
+• Proper error handling
+• Button loading state
+• Console logs for debugging
+
+---
+
+### CONTEXT
+
+Frontend:
+• Pure HTML/CSS/JS
+• No frameworks
+
+Backend:
+• Supabase (storage + database)
+
+---
+
+### GOAL
+
+Ensure that after submission:
+• File is uploaded ✅  
+• Form data is saved in database ✅  
+• file_url is linked with the submission ✅  
+
+Fix the bug completely.
