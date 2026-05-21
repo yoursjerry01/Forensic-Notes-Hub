@@ -4,7 +4,7 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGri
 import { Users, Mail, FileText, Eye, ArrowLeft, Lock } from "lucide-react";
 import { getSupabase } from "../lib/supabase";
 
-const ADMIN_PASSWORD = "evidentia2026";
+const ADMIN_PASSWORD = "Anckit@0809";
 
 type DayCount = { date: string; views: number };
 type Signup = { email: string; created_at: string };
