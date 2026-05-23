@@ -12,6 +12,7 @@ import { Incentives } from "./sections/Incentives";
 import { Footer } from "./sections/Footer";
 import { Navbar } from "./components/Navbar";
 import { SubmitSyllabus } from "./pages/SubmitSyllabus";
+import { Notes } from "./pages/Notes";
 import { Admin } from "./pages/Admin";
 import { trackPageView } from "./lib/analytics";
 
@@ -46,6 +47,7 @@ function App() {
         <PageTracker />
         <Switch>
           <Route path="/" component={Home} />
+          <Route path="/notes" component={Notes} />
           <Route path="/submit-syllabus" component={SubmitSyllabus} />
           <Route path="/admin" component={Admin} />
         </Switch>
