@@ -22,6 +22,8 @@ const SEMESTERS = [
   "Year 2 / Sem 4",
   "Year 3 / Sem 5",
   "Year 3 / Sem 6",
+  "Year 4 / Sem 7",
+  "Year 4 / Sem 8",
 ];
 
 type Status = "idle" | "loading" | "success" | "error";
