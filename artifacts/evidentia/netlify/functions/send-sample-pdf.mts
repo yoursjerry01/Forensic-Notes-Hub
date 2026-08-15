@@ -270,8 +270,9 @@ export default async (req: Request) => {
       </td>
     </tr>
   </table>
-</div>,
-     attachments:  [
+</div>`,
+      
+      attachments: [
         {
           filename: "Forensic-Science-Sample-Notes.pdf",
           content: pdfBuffer,
