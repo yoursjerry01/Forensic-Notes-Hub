@@ -15,7 +15,7 @@ const ALLOWED_TYPES = [
 const ALLOWED_EXT = [".pdf", ".jpg", ".jpeg", ".png", ".doc", ".docx"];
 const MAX_SIZE_MB = 25;
 
-const SEMESTERS = [
+const BSC_SEMESTERS = [
   "Year 1 / Sem 1",
   "Year 1 / Sem 2",
   "Year 2 / Sem 3",
@@ -24,6 +24,15 @@ const SEMESTERS = [
   "Year 3 / Sem 6",
   "Year 4 / Sem 7",
   "Year 4 / Sem 8",
+];
+
+const MSC_SEMESTERS = [
+  "Year 1 / Sem 1",
+  "Year 1 / Sem 2",
+  "Year 2 / Sem 3",
+  "Year 2 / Sem 4",
+  "Year 3 / Sem 5",
+  "Year 3 / Sem 6",
 ];
 
 type Status = "idle" | "loading" | "success" | "error";
@@ -260,7 +269,10 @@ export function SubmitSyllabus() {
             <select
               className={inputClass}
               value={course}
-              onChange={e => setCourse(e.target.value)}
+              onChange={e => {
+  setCourse(e.target.value);
+  setSemester("");
+}}
               disabled={status === "loading"}
             >
               <option value="">Select your course</option>
@@ -300,7 +312,14 @@ export function SubmitSyllabus() {
                 disabled={status === "loading"}
               >
                 <option value="">Select semester</option>
-                {SEMESTERS.map(s => <option key={s}>{s}</option>)}
+{(course === "M.Sc Forensic Science"
+  ? MSC_SEMESTERS
+  : BSC_SEMESTERS
+).map(s => (
+  <option key={s} value={s}>
+    {s}
+  </option>
+))}
               </select>
             </div>
             <div>
