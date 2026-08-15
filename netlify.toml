@@ -1,0 +1,8 @@
+[build]
+  base = "artifacts/evidentia"
+  command = "pnpm build"
+  publish = "dist"
+
+[functions]
+  directory = "netlify/functions"
+  included_files = ["public/Forensic-Science-Sample-Notes.pdf"]
