@@ -58,550 +58,203 @@ export default async (req: Request) => {
       subject: "Your Free Forensic Science Sample Notes | Evidentia",
 
             html: `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Your Forensic Science Sample Notes</title>
-
-  <style>
-    @media only screen and (max-width: 600px) {
-      .email-wrapper {
-        padding: 16px !important;
-      }
-
-      .email-container {
-        width: 100% !important;
-        border-radius: 14px !important;
-      }
-
-      .content {
-        padding-left: 24px !important;
-        padding-right: 24px !important;
-      }
-
-      .hero-title {
-        font-size: 29px !important;
-        line-height: 37px !important;
-      }
-
-      .feature {
-        display: block !important;
-        width: 100% !important;
-        padding: 10px 0 !important;
-      }
-
-      .cta-button {
-        display: block !important;
-        width: auto !important;
-      }
-    }
-  </style>
-</head>
-
-<body style="
-  margin:0;
-  padding:0;
-  background:#f3f7fb;
-  font-family:Arial, Helvetica, sans-serif;
-  color:#172033;
-">
-
-  <!-- Preheader -->
-  <div style="
-    display:none;
-    max-height:0;
-    overflow:hidden;
-    opacity:0;
-    color:transparent;
-  ">
-    Your free Forensic Science Sample Notes from Evidentia are ready.
-  </div>
-
-  <table
-    role="presentation"
-    width="100%"
-    cellspacing="0"
-    cellpadding="0"
-    border="0"
-    style="background:#f3f7fb;"
-  >
+<div style="margin:0;padding:0;background:#f4f7fb;font-family:Arial,Helvetica,sans-serif;color:#111827;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;background:#f4f7fb;">
     <tr>
-      <td
-        align="center"
-        class="email-wrapper"
-        style="padding:32px 16px;"
-      >
+      <td align="center" style="padding:24px 12px;">
 
-        <!-- Main Card -->
-        <table
-          role="presentation"
-          width="600"
-          cellspacing="0"
-          cellpadding="0"
-          border="0"
-          class="email-container"
-          style="
-            width:600px;
-            max-width:600px;
-            background:#ffffff;
-            border-radius:18px;
-            overflow:hidden;
-            box-shadow:0 8px 30px rgba(15,23,42,0.08);
-          "
-        >
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0"
+          style="width:100%;max-width:600px;background:#ffffff;border-radius:18px;overflow:hidden;">
 
-          <!-- Brand Header -->
+          <!-- HEADER -->
           <tr>
-            <td
-              align="center"
-              style="
-                padding:30px 24px 24px;
-                background:#ffffff;
-              "
-            >
+            <td align="center" style="padding:34px 24px 26px;background:#ffffff;">
+
               <img
                 src="https://evidentia.in/logo.png"
-                width="210"
                 alt="Evidentia"
-                style="
-                  display:block;
-                  width:210px;
-                  max-width:100%;
-                  height:auto;
-                  border:0;
-                "
-              >
+                width="210"
+                style="display:block;width:210px;max-width:80%;height:auto;margin:0 auto;"
+              />
+
+              <div style="height:4px;max-width:520px;margin:26px auto 0;background:linear-gradient(90deg,#1457c5,#10a5a0);font-size:0;line-height:0;">
+                &nbsp;
+              </div>
+
             </td>
           </tr>
 
-          <!-- Brand Line -->
+          <!-- HERO -->
           <tr>
-            <td
-              style="
-                height:5px;
-                background:linear-gradient(90deg,#1646b8,#16a394);
-                font-size:0;
-                line-height:0;
-              "
-            ></td>
-          </tr>
+            <td align="center" style="padding:28px 32px 18px;">
 
-          <!-- Hero -->
-          <tr>
-            <td
-              align="center"
-              class="content"
-              style="
-                padding:42px 48px 28px;
-              "
-            >
-
-              <!-- Badge -->
-              <div style="
-                display:inline-block;
-                padding:7px 14px;
-                background:#eef4ff;
-                color:#1747b8;
-                border-radius:50px;
-                font-size:11px;
-                font-weight:bold;
-                letter-spacing:0.8px;
-                text-transform:uppercase;
-                margin-bottom:18px;
-              ">
+              <div style="display:inline-block;padding:7px 15px;background:#eef5ff;color:#1457c5;border-radius:20px;font-size:12px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;">
                 Welcome to Evidentia
               </div>
 
-              <!-- Heading -->
-              <h1
-                class="hero-title"
-                style="
-                  margin:0 0 16px;
-                  color:#101828;
-                  font-size:35px;
-                  line-height:43px;
-                  font-weight:700;
-                  letter-spacing:-0.5px;
-                "
-              >
+              <h1 style="margin:18px 0 12px;font-size:32px;line-height:1.2;color:#0f172a;">
                 Your Sample Notes<br>
-                <span style="color:#1747b8;">Are Ready.</span>
+                <span style="color:#1457c5;">Are Ready.</span>
               </h1>
 
-              <!-- Description -->
-              <p style="
-                margin:0 auto;
-                max-width:470px;
-                color:#667085;
-                font-size:16px;
-                line-height:26px;
-              ">
+              <p style="margin:0 auto;max-width:470px;font-size:16px;line-height:1.7;color:#64748b;">
                 Thank you for joining Evidentia. Your free
-                <strong style="color:#344054;">
-                  Forensic Science Sample Notes
-                </strong>
+                <strong style="color:#334155;">Forensic Science Sample Notes</strong>
                 are attached to this email.
               </p>
 
             </td>
           </tr>
 
-          <!-- Attachment Highlight -->
+          <!-- PDF PRIORITY CARD -->
           <tr>
-            <td
-              class="content"
-              style="
-                padding:10px 48px 30px;
-              "
-            >
+            <td style="padding:12px 32px 10px;">
 
-              <table
-                role="presentation"
-                width="100%"
-                cellspacing="0"
-                cellpadding="0"
-                border="0"
-                style="
-                  background:#f7faff;
-                  border:1px solid #dce7fb;
-                  border-radius:14px;
-                "
-              >
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+                style="width:100%;background:#f1f6ff;border:1px solid #d9e7fb;border-radius:16px;">
+
                 <tr>
-                  <td
-                    align="center"
-                    style="
-                      padding:24px 20px;
-                    "
-                  >
+                  <td align="center" style="padding:28px 20px;">
 
-                    <!-- PDF Icon -->
-                    <div style="
-                      display:inline-block;
-                      width:48px;
-                      height:48px;
-                      line-height:48px;
-                      background:#e9f0ff;
-                      border-radius:12px;
-                      color:#1747b8;
-                      font-size:22px;
-                      font-weight:bold;
-                      margin-bottom:12px;
-                    ">
+                    <div style="display:inline-block;width:58px;height:58px;line-height:58px;background:#e2edff;color:#1457c5;border-radius:14px;font-size:22px;font-weight:bold;">
                       PDF
                     </div>
 
-                    <div style="
-                      color:#172033;
-                      font-size:17px;
-                      line-height:24px;
-                      font-weight:bold;
-                    ">
+                    <h2 style="margin:16px 0 6px;font-size:19px;color:#0f172a;">
                       Forensic Science Sample Notes
-                    </div>
+                    </h2>
 
-                    <div style="
-                      color:#667085;
-                      font-size:13px;
-                      line-height:20px;
-                      margin-top:6px;
-                    ">
+                    <p style="margin:0;font-size:14px;line-height:1.6;color:#64748b;">
                       Your sample PDF is attached to this email.
+                    </p>
+
+                    <div style="margin-top:18px;padding:11px 16px;background:#ffffff;border-radius:9px;color:#1457c5;font-size:13px;font-weight:bold;">
+                      📎 Open the attachment below to view or download
                     </div>
 
                   </td>
                 </tr>
+
               </table>
 
             </td>
           </tr>
 
-          <!-- What's Inside -->
+          <!-- WHAT'S INSIDE -->
           <tr>
-            <td
-              class="content"
-              style="
-                padding:0 48px 30px;
-              "
-            >
+            <td style="padding:28px 32px 10px;">
 
-              <h2 style="
-                margin:0 0 16px;
-                color:#172033;
-                font-size:18px;
-                line-height:26px;
-              ">
-                What you'll find inside
+              <h2 style="margin:0 0 20px;font-size:21px;color:#0f172a;">
+                What's inside
               </h2>
 
-              <table
-                role="presentation"
-                width="100%"
-                cellspacing="0"
-                cellpadding="0"
-                border="0"
-              >
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+
                 <tr>
-
-                  <!-- Feature 1 -->
-                  <td
-                    class="feature"
-                    width="33%"
-                    valign="top"
-                    style="padding:8px 8px 8px 0;"
-                  >
-                    <div style="
-                      color:#1747b8;
-                      font-size:20px;
-                      margin-bottom:6px;
-                    ">
-                      ✓
-                    </div>
-
-                    <strong style="
-                      display:block;
-                      color:#172033;
-                      font-size:13px;
-                      line-height:18px;
-                    ">
-                      Exam Focused
-                    </strong>
-
-                    <span style="
-                      display:block;
-                      color:#667085;
-                      font-size:12px;
-                      line-height:18px;
-                      margin-top:4px;
-                    ">
-                      Structured for revision
-                    </span>
+                  <td width="38" valign="top" style="font-size:20px;color:#1457c5;">
+                    ✓
                   </td>
-
-                  <!-- Feature 2 -->
-                  <td
-                    class="feature"
-                    width="33%"
-                    valign="top"
-                    style="padding:8px;"
-                  >
-                    <div style="
-                      color:#159b8b;
-                      font-size:20px;
-                      margin-bottom:6px;
-                    ">
-                      ✓
+                  <td style="padding-bottom:18px;">
+                    <strong style="font-size:15px;color:#1e293b;">Exam Focused</strong>
+                    <div style="margin-top:4px;font-size:13px;line-height:1.5;color:#64748b;">
+                      Structured for revision and exam preparation.
                     </div>
-
-                    <strong style="
-                      display:block;
-                      color:#172033;
-                      font-size:13px;
-                      line-height:18px;
-                    ">
-                      Clear Concepts
-                    </strong>
-
-                    <span style="
-                      display:block;
-                      color:#667085;
-                      font-size:12px;
-                      line-height:18px;
-                      margin-top:4px;
-                    ">
-                      Easy to understand
-                    </span>
                   </td>
-
-                  <!-- Feature 3 -->
-                  <td
-                    class="feature"
-                    width="33%"
-                    valign="top"
-                    style="padding:8px 0 8px 8px;"
-                  >
-                    <div style="
-                      color:#1747b8;
-                      font-size:20px;
-                      margin-bottom:6px;
-                    ">
-                      ✓
-                    </div>
-
-                    <strong style="
-                      display:block;
-                      color:#172033;
-                      font-size:13px;
-                      line-height:18px;
-                    ">
-                      Forensic Focus
-                    </strong>
-
-                    <span style="
-                      display:block;
-                      color:#667085;
-                      font-size:12px;
-                      line-height:18px;
-                      margin-top:4px;
-                    ">
-                      Relevant applications
-                    </span>
-                  </td>
-
                 </tr>
+
+                <tr>
+                  <td width="38" valign="top" style="font-size:20px;color:#10a5a0;">
+                    ✓
+                  </td>
+                  <td style="padding-bottom:18px;">
+                    <strong style="font-size:15px;color:#1e293b;">Clear Concepts</strong>
+                    <div style="margin-top:4px;font-size:13px;line-height:1.5;color:#64748b;">
+                      Easy-to-understand explanations for better learning.
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td width="38" valign="top" style="font-size:20px;color:#1457c5;">
+                    ✓
+                  </td>
+                  <td>
+                    <strong style="font-size:15px;color:#1e293b;">Forensic Focus</strong>
+                    <div style="margin-top:4px;font-size:13px;line-height:1.5;color:#64748b;">
+                      Relevant forensic applications and examples.
+                    </div>
+                  </td>
+                </tr>
+
               </table>
 
             </td>
           </tr>
 
-          <!-- CTA -->
+          <!-- SECONDARY CTA -->
           <tr>
-            <td
-              align="center"
-              class="content"
-              style="
-                padding:4px 48px 36px;
-              "
-            >
+            <td style="padding:24px 32px 28px;">
 
-              <table
-                role="presentation"
-                width="100%"
-                cellspacing="0"
-                cellpadding="0"
-                border="0"
-                style="
-                  background:#f1f6ff;
-                  border-radius:14px;
-                "
-              >
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+                style="background:#f1f5ff;border-radius:14px;">
+
                 <tr>
-                  <td
-                    align="center"
-                    style="
-                      padding:25px 20px;
-                    "
-                  >
+                  <td align="center" style="padding:24px 20px;">
 
-                    <div style="
-                      color:#344054;
-                      font-size:14px;
-                      line-height:21px;
-                      margin-bottom:16px;
-                    ">
-                      Ready to explore more?
-                    </div>
+                    <p style="margin:0 0 16px;font-size:15px;color:#475569;">
+                      Want to explore more?
+                    </p>
 
                     <a
                       href="https://evidentia.in"
-                      class="cta-button"
-                      style="
-                        display:inline-block;
-                        background:#1747b8;
-                        color:#ffffff;
-                        text-decoration:none;
-                        font-size:14px;
-                        font-weight:bold;
-                        padding:13px 26px;
-                        border-radius:8px;
-                      "
+                      style="display:inline-block;padding:14px 28px;background:#1457c5;color:#ffffff;text-decoration:none;border-radius:9px;font-size:14px;font-weight:bold;"
                     >
                       Explore Evidentia →
                     </a>
 
                   </td>
                 </tr>
+
               </table>
 
             </td>
           </tr>
 
-          <!-- Closing -->
+          <!-- CLOSING -->
           <tr>
-            <td
-              class="content"
-              style="
-                padding:0 48px 38px;
-              "
-            >
+            <td style="padding:4px 32px 30px;">
 
-              <p style="
-                margin:0;
-                color:#667085;
-                font-size:15px;
-                line-height:24px;
-              ">
-                We hope these notes help you learn better,
-                revise faster, and prepare with confidence.
+              <p style="margin:0 0 20px;font-size:15px;line-height:1.7;color:#64748b;">
+                We hope these notes help you learn better, revise faster,
+                and prepare with confidence.
               </p>
 
-              <p style="
-                margin:18px 0 0;
-                color:#667085;
-                font-size:15px;
-                line-height:24px;
-              ">
+              <p style="margin:0;font-size:15px;line-height:1.6;color:#64748b;">
                 Regards,<br>
-                <strong style="color:#172033;">
-                  Team Evidentia
-                </strong>
+                <strong style="color:#0f172a;">Team Evidentia</strong>
               </p>
 
             </td>
           </tr>
 
-          <!-- Footer -->
+          <!-- FOOTER -->
           <tr>
-            <td
-              align="center"
-              style="
-                padding:28px 24px;
-                background:#101828;
-              "
-            >
+            <td align="center" style="padding:30px 20px;background:#0f172a;">
 
-              <div style="
-                color:#ffffff;
-                font-size:18px;
-                font-weight:bold;
-                letter-spacing:1px;
-              ">
+              <div style="font-size:21px;font-weight:bold;letter-spacing:1px;color:#ffffff;">
                 EVIDENTIA
               </div>
 
-              <div style="
-                color:#8fb3ff;
-                font-size:11px;
-                margin-top:7px;
-                letter-spacing:1px;
-              ">
+              <div style="margin-top:7px;font-size:11px;letter-spacing:2px;color:#76a9ff;">
                 DECODE. LEARN. EXCEL.
               </div>
 
-              <div style="
-                color:#98a2b3;
-                font-size:11px;
-                margin-top:14px;
-                line-height:18px;
-              ">
+              <div style="margin-top:15px;font-size:12px;color:#94a3b8;">
                 Evidence. Explained.
               </div>
 
-              <div style="
-                margin-top:12px;
-              ">
-                <a
-                  href="https://evidentia.in"
-                  style="
-                    color:#ffffff;
-                    text-decoration:none;
-                    font-size:11px;
-                  "
-                >
-                  evidentia.in
-                </a>
+              <div style="margin-top:14px;font-size:12px;color:#ffffff;">
+                evidentia.in
               </div>
 
             </td>
@@ -609,26 +262,15 @@ export default async (req: Request) => {
 
         </table>
 
-        <!-- Footer Note -->
-        <div style="
-          max-width:600px;
-          padding:18px 20px 0;
-          color:#98a2b3;
-          font-size:11px;
-          line-height:18px;
-          text-align:center;
-        ">
-          You're receiving this email because you requested
-          early access to Evidentia.
+        <!-- EMAIL REASON -->
+        <div style="max-width:600px;padding:18px 20px 4px;text-align:center;color:#94a3b8;font-size:11px;line-height:18px;">
+          You're receiving this email because you requested early access to Evidentia.
         </div>
 
       </td>
     </tr>
   </table>
-
-</body>
-</html>
-      `,
+</div>,
      attachments:  [
         {
           filename: "Forensic-Science-Sample-Notes.pdf",
