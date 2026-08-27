@@ -27,11 +27,11 @@ export function Hero() {
         </motion.p>
 
         <motion.div {...fadeUp(0.3)} className="max-w-md mx-auto mb-6">
-          <EmailForm buttonText="Get Early Access" />
+          <EmailForm buttonText="Get Free Sample Notes" />
         </motion.div>
 
         <motion.p {...fadeUp(0.42)} className="text-sm text-gray-500">
-          Be the first to access notes and early discounts.
+          Free sample PDF • No payment required.
         </motion.p>
       </div>
     </section>
