@@ -20,7 +20,7 @@ export function EmailForm({ buttonText }: EmailFormProps) {
     return (
       <div className="flex items-center gap-2 p-4 text-blue-800 bg-blue-50 border border-blue-200 rounded-md font-medium">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-blue-700"><polyline points="20 6 9 17 4 12"></polyline></svg>
-        You're In. We'll notify you soon.
+        You're in! Check your inbox for your free sample PDF!
       </div>
     );
   }
