@@ -15,11 +15,11 @@ export function Footer() {
 
         <div className="flex items-center justify-center gap-4 mb-8">
           <a
-            href="mailto:Contact@evidentia.com"
+            href="mailto:Contact@evidentia.in"
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-gray-200 bg-white text-gray-700 text-sm font-medium hover:border-blue-500 hover:text-blue-800 transition-colors"
           >
             <Mail className="w-4 h-4" />
-            Contact@evidentia.com
+            Contact@evidentia.in
           </a>
           <a
             href="https://instagram.com/evidentia.in"
