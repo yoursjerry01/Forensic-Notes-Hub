@@ -197,7 +197,7 @@ export function Notes() {
         >
           <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 text-xs font-semibold px-3 py-1.5 rounded-full mb-4">
             <Sparkles className="w-3.5 h-3.5" />
-            Free Study Resources
+            Forensic Study Resources
           </div>
           <h1 className="text-4xl font-bold text-gray-900 mb-3">
             Forensic Science Notes
