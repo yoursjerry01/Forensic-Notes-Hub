@@ -317,17 +317,52 @@ setFile(null);
   }
 
   async function handleDelete(note: Note) {
-    if (!confirm(`Delete "${note.title}"? This cannot be undone.`)) return;
-    try {
-      const supabase = getSupabase();
-      const pathPart = note.file_url.split("/notes_files/")[1];
-      if (pathPart) await supabase.storage.from("notes_files").remove([pathPart]);
-      await supabase.from("notes").delete().eq("id", note.id);
-      setNotes(prev => prev.filter(n => n.id !== note.id));
-    } catch (e) {
-      alert("Failed to delete note.");
+  if (!confirm(`Delete "${note.title}"? This cannot be undone.`)) return;
+
+  try {
+    const supabase = getSupabase();
+
+    // Delete database record first
+    const { error: dbError } = await supabase
+      .from("notes")
+      .delete()
+      .eq("id", note.id);
+
+    if (dbError) {
+      console.error("Database delete failed:", dbError);
+      alert(`Database delete failed: ${dbError.message}`);
+      return;
     }
+
+    // Delete the actual file from Storage
+    const pathPart = note.file_url.split("/notes_files/")[1];
+
+    if (pathPart) {
+      const { error: storageError } = await supabase
+        .storage
+        .from("notes_files")
+        .remove([pathPart]);
+
+      if (storageError) {
+        console.error("Storage delete failed:", storageError);
+        alert(
+          `Note was deleted from database, but the file could not be deleted: ${storageError.message}`
+        );
+      }
+    }
+
+    // Update UI only after successful database deletion
+    setNotes(prev => prev.filter(n => n.id !== note.id));
+
+  } catch (error) {
+    console.error("Delete error:", error);
+    alert(
+      error instanceof Error
+        ? error.message
+        : "Failed to delete note."
+    );
   }
+}
 
   const inputClass = "w-full px-4 py-2.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-700 transition-colors";
   const labelClass = "block text-xs font-semibold text-gray-600 mb-1.5";

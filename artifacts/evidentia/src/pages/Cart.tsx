@@ -69,22 +69,35 @@ export function Cart() {
       <main className="max-w-6xl mx-auto px-6 py-10 lg:py-14">
 
         <div className="mb-8">
-          <div className="flex items-center gap-3 mb-3">
+  <div className="flex items-center justify-between gap-4 mb-3">
 
-            <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
-              <ShoppingCart className="w-5 h-5 text-blue-700" />
-            </div>
+    <div className="flex items-center gap-3">
 
-            <h1 className="text-3xl sm:text-4xl font-bold text-gray-900">
-              Your Cart
-            </h1>
+      <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
+        <ShoppingCart className="w-5 h-5 text-blue-700" />
+      </div>
 
-          </div>
+      <h1 className="text-3xl sm:text-4xl font-bold text-gray-900">
+        Your Cart
+      </h1>
 
-          <p className="text-gray-500">
-            Review your selected study notes before continuing.
-          </p>
-        </div>
+    </div>
+
+    {/* Browse More Notes */}
+    <Link
+      href="/notes"
+      className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-blue-200 bg-white text-blue-700 text-sm font-semibold hover:bg-blue-50 transition-colors whitespace-nowrap"
+    >
+      <BookOpen className="w-4 h-4" />
+      Browse More Notes
+    </Link>
+
+  </div>
+
+  <p className="text-gray-500">
+    Review your selected study notes before continuing.
+  </p>
+</div>
 
         {cart.length === 0 ? (
 
