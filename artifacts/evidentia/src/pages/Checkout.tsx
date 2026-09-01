@@ -443,10 +443,6 @@ export function Checkout() {
     undefined,
 },
 
-hidden: {
-  contact: true,
-},
-
         notes: {
           supabase_order_id: data.order_id,
           order_number: data.order_number,
