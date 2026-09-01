@@ -12,12 +12,13 @@ type Note = {
   title: string;
   subject: string;
   description: string | null;
-  semester: string | null;
+  note_type: string | null;
   course: string | null;
   file_url: string;
   file_name: string | null;
   tags: string[] | null;
   is_free: boolean;
+  price: number | null;
   created_at: string;
 };
 
@@ -36,18 +37,6 @@ const SUBJECTS = [
   "Other",
 ];
 
-const SEMESTERS = [
-  "All Semesters",
-  "Year 1 / Sem 1",
-  "Year 1 / Sem 2",
-  "Year 2 / Sem 3",
-  "Year 2 / Sem 4",
-  "Year 3 / Sem 5",
-  "Year 3 / Sem 6",
-  "M.Sc Year 1",
-  "M.Sc Year 2",
-];
-
 const SUBJECT_COLORS: Record<string, string> = {
   "Forensic Chemistry": "bg-amber-100 text-amber-800",
   "Forensic Toxicology": "bg-red-100 text-red-800",
@@ -64,6 +53,9 @@ const SUBJECT_COLORS: Record<string, string> = {
 
 function NoteCard({ note, index }: { note: Note; index: number }) {
   const badgeColor = SUBJECT_COLORS[note.subject] ?? "bg-cyan-100 text-cyan-800";
+  const [expanded, setExpanded] = useState(false);
+
+  const hasLongDescription = note.description && note.description.length > 140;
 
   return (
     <motion.div
@@ -76,7 +68,10 @@ function NoteCard({ note, index }: { note: Note; index: number }) {
         <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0 group-hover:bg-blue-100 transition-colors">
           <FileText className="w-5 h-5 text-blue-700" />
         </div>
-        <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${badgeColor}`}>
+
+        <span
+          className={`text-xs font-semibold px-2.5 py-1 rounded-full ${badgeColor}`}
+        >
           {note.subject}
         </span>
       </div>
@@ -85,43 +80,70 @@ function NoteCard({ note, index }: { note: Note; index: number }) {
         <h3 className="font-bold text-gray-900 text-base leading-snug mb-1.5 group-hover:text-blue-800 transition-colors">
           {note.title}
         </h3>
+
         {note.description && (
-          <p className="text-sm text-gray-500 line-clamp-2">{note.description}</p>
+          <div>
+            <p
+              className={`text-sm text-gray-500 whitespace-pre-line leading-relaxed ${
+                !expanded && hasLongDescription ? "line-clamp-3" : ""
+              }`}
+            >
+              {note.description}
+            </p>
+
+            {hasLongDescription && (
+              <button
+                type="button"
+                onClick={() => setExpanded(!expanded)}
+                className="mt-2 text-sm font-semibold text-blue-700 hover:text-blue-900 transition-colors"
+              >
+                {expanded ? "Read less" : "Read more"}
+              </button>
+            )}
+          </div>
         )}
       </div>
 
-      <div className="flex flex-wrap gap-2">
-        {note.semester && (
-          <span className="text-xs px-2.5 py-1 bg-gray-100 text-gray-600 rounded-full">
-            {note.semester}
-          </span>
-        )}
-        {note.course && (
-          <span className="text-xs px-2.5 py-1 bg-gray-100 text-gray-600 rounded-full">
-            {note.course}
-          </span>
-        )}
-        {note.tags?.map(tag => (
-          <span key={tag} className="text-xs px-2.5 py-1 bg-cyan-50 text-cyan-700 rounded-full">
-            #{tag}
-          </span>
-        ))}
-      </div>
+     <div className="flex flex-wrap items-center gap-2">
+  {note.note_type && (
+    <span className="text-xs font-semibold px-2.5 py-1 bg-blue-50 text-blue-700 rounded-full">
+      {note.note_type}
+    </span>
+  )}
 
-      <div className="pt-2 border-t border-gray-100 flex items-center justify-between">
-        <span className="text-xs text-gray-400">
-          {new Date(note.created_at).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
-        </span>
-        <a
-          href={note.file_url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 text-sm font-semibold text-blue-700 hover:text-blue-900 transition-colors"
-        >
-          <Download className="w-4 h-4" />
-          Download
-        </a>
-      </div>
+  {note.course && (
+    <span className="text-xs px-2.5 py-1 bg-gray-100 text-gray-600 rounded-full">
+      {note.course}
+    </span>
+  )}
+</div>
+
+      <div className="flex items-center gap-3">
+  <span
+    className={`text-sm font-bold ${
+      note.is_free ? "text-green-600" : "text-gray-900"
+    }`}
+  >
+    {note.is_free ? "FREE" : `₹${note.price ?? "—"}`}
+  </span>
+
+  <Link
+    href={`/note/${note.id}`}
+    className="inline-flex items-center gap-1.5 text-sm font-semibold text-blue-700 hover:text-blue-900 transition-colors"
+  >
+    {note.is_free ? (
+      <>
+        <Download className="w-4 h-4" />
+        View Note
+      </>
+    ) : (
+      <>
+        <BookOpen className="w-4 h-4" />
+        View Note
+      </>
+    )}
+  </Link>
+</div>
     </motion.div>
   );
 }
@@ -132,7 +154,7 @@ export function Notes() {
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
   const [subject, setSubject] = useState("All Subjects");
-  const [semester, setSemester] = useState("All Semesters");
+  const [noteType, setNoteType] = useState("All Types");
   const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
@@ -162,9 +184,10 @@ export function Notes() {
       n.subject.toLowerCase().includes(search.toLowerCase()) ||
       n.description?.toLowerCase().includes(search.toLowerCase()) ||
       n.tags?.some(t => t.toLowerCase().includes(search.toLowerCase()));
-    const matchSubject = subject === "All Subjects" || n.subject === subject;
-    const matchSemester = semester === "All Semesters" || n.semester === semester;
-    return matchSearch && matchSubject && matchSemester;
+   const matchSubject = subject === "All Subjects" || n.subject === subject;
+const matchType = noteType === "All Types" || n.note_type === noteType;
+
+return matchSearch && matchSubject && matchType;
   });
 
   return (
@@ -219,7 +242,7 @@ export function Notes() {
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search notes by title, subject, or tag…"
+               placeholder="Search notes by title, subject, topic, or tag…"
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-700 transition-colors"
@@ -255,19 +278,24 @@ export function Notes() {
                   {SUBJECTS.map(s => <option key={s}>{s}</option>)}
                 </select>
               </div>
-              <div className="flex-1 min-w-[180px]">
-                <label className="block text-xs font-semibold text-gray-500 mb-1.5">Semester</label>
-                <select
-                  value={semester}
-                  onChange={e => setSemester(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-700"
-                >
-                  {SEMESTERS.map(s => <option key={s}>{s}</option>)}
-                </select>
-              </div>
-              {(subject !== "All Subjects" || semester !== "All Semesters") && (
+             <div className="flex-1 min-w-[180px]">
+  <label className="block text-xs font-semibold text-gray-500 mb-1.5">
+    Note Type
+  </label>
+
+  <select
+    value={noteType}
+    onChange={e => setNoteType(e.target.value)}
+    className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-700"
+  >
+    <option>All Types</option>
+    <option>Detailed Notes</option>
+    <option>Revision Notes</option>
+  </select>
+</div>
+              {(subject !== "All Subjects" || noteType !== "All Types") && (
                 <button
-                  onClick={() => { setSubject("All Subjects"); setSemester("All Semesters"); }}
+                  onClick={() => { setSubject("All Subjects"); setNoteType("All Types"); }}
                   className="self-end text-xs text-red-500 hover:text-red-700 transition-colors px-3 py-2"
                 >
                   Clear filters

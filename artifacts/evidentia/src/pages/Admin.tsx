@@ -17,12 +17,13 @@ type Note = {
   title: string;
   subject: string;
   description: string | null;
-  semester: string | null;
+  note_type: string | null;
   course: string | null;
   file_url: string;
   file_name: string | null;
   tags: string[] | null;
   is_free: boolean;
+  price: number | null;
   created_at: string;
 };
 
@@ -31,12 +32,6 @@ const SUBJECTS = [
   "DNA Analysis", "Forensic Physics", "Crime Scene Investigation",
   "Forensic Anthropology", "Document Examination", "Ballistics",
   "Forensic Psychology", "Other",
-];
-const SEMESTERS = [
-  "Year 1 / Sem 1", "Year 1 / Sem 2",
-  "Year 2 / Sem 3", "Year 2 / Sem 4",
-  "Year 3 / Sem 5", "Year 3 / Sem 6",
-  "M.Sc Year 1", "M.Sc Year 2",
 ];
 const ALLOWED_TYPES = ["application/pdf", "application/msword",
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
@@ -219,10 +214,11 @@ function NotesTab() {
   const [title, setTitle] = useState("");
   const [subject, setSubject] = useState("");
   const [description, setDescription] = useState("");
-  const [semester, setSemester] = useState("");
-  const [course, setCourse] = useState("");
-  const [tagsInput, setTagsInput] = useState("");
-  const [isFree, setIsFree] = useState(true);
+  const [noteType, setNoteType] = useState("");
+const [course, setCourse] = useState("");
+const [tagsInput, setTagsInput] = useState("");
+const [isFree, setIsFree] = useState(true);
+const [price, setPrice] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [fileError, setFileError] = useState("");
   const [uploadStatus, setUploadStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
@@ -255,7 +251,21 @@ function NotesTab() {
 
   async function handleUpload(e: React.FormEvent) {
     e.preventDefault();
-    if (!title.trim() || !subject) { setUploadMsg("Title and subject are required."); setUploadStatus("error"); return; }
+    if (!title.trim() || !subject || !noteType) {
+  setUploadMsg("Title, subject, and note type are required.");
+  setUploadStatus("error");
+  return;
+}
+
+if (!isFree) {
+  const numericPrice = Number(price);
+
+  if (!price || !Number.isFinite(numericPrice) || numericPrice <= 0) {
+    setUploadMsg("Please enter a valid price for a paid note.");
+    setUploadStatus("error");
+    return;
+  }
+}
     if (!file) { setUploadMsg("Please select a file."); setUploadStatus("error"); return; }
 
     setUploadStatus("loading"); setUploadMsg("");
@@ -274,16 +284,29 @@ function NotesTab() {
       const tags = tagsInput.trim() ? tagsInput.split(",").map(t => t.trim()).filter(Boolean) : null;
 
       const { error: dbErr } = await supabase.from("notes").insert({
-        title: title.trim(), subject, description: description.trim() || null,
-        semester: semester || null, course: course.trim() || null,
-        file_url: fileUrl, file_name: file.name,
-        tags, is_free: isFree,
+        title: title.trim(),
+subject,
+description: description.trim() || null,
+note_type: noteType,
+course: course.trim() || null,
+file_url: fileUrl,
+file_name: file.name,
+tags,
+is_free: isFree,
+price: isFree ? null : Number(price),
       });
       if (dbErr) throw new Error(`DB error: ${dbErr.message}`);
 
       setUploadStatus("success"); setUploadMsg("Note uploaded successfully!");
-      setTitle(""); setSubject(""); setDescription(""); setSemester("");
-      setCourse(""); setTagsInput(""); setIsFree(true); setFile(null);
+      setTitle("");
+setSubject("");
+setDescription("");
+setNoteType("");
+setCourse("");
+setTagsInput("");
+setIsFree(true);
+setPrice("");
+setFile(null);
       if (fileRef.current) fileRef.current.value = "";
       await fetchNotes();
       setTimeout(() => { setUploadStatus("idle"); setUploadMsg(""); setShowUpload(false); }, 1800);
@@ -352,18 +375,33 @@ function NotesTab() {
             </div>
 
             <div className="grid sm:grid-cols-2 gap-4">
-              <div>
-                <label className={labelClass}>Semester</label>
-                <select className={inputClass} value={semester} onChange={e => setSemester(e.target.value)}>
-                  <option value="">Select semester</option>
-                  {SEMESTERS.map(s => <option key={s}>{s}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className={labelClass}>Course</label>
-                <input className={inputClass} placeholder="e.g. B.Sc Forensic Science" value={course} onChange={e => setCourse(e.target.value)} />
-              </div>
-            </div>
+  <div>
+    <label className={labelClass}>
+      Note Type <span className="text-red-400">*</span>
+    </label>
+
+    <select
+      className={inputClass}
+      value={noteType}
+      onChange={e => setNoteType(e.target.value)}
+    >
+      <option value="">Select note type</option>
+      <option value="Detailed Notes">Detailed Notes</option>
+      <option value="Revision Notes">Revision Notes</option>
+    </select>
+  </div>
+
+  <div>
+    <label className={labelClass}>Course</label>
+
+    <input
+      className={inputClass}
+      placeholder="e.g. B.Sc Forensic Science"
+      value={course}
+      onChange={e => setCourse(e.target.value)}
+    />
+  </div>
+</div>
 
             <div>
               <label className={labelClass}>Tags <span className="font-normal text-gray-400">(comma-separated)</span></label>
@@ -398,12 +436,59 @@ function NotesTab() {
               {fileError && <p className="mt-1 text-xs text-red-500 flex items-center gap-1"><AlertCircle className="w-3 h-3" />{fileError}</p>}
             </div>
 
-            <label className="flex items-center gap-2.5 cursor-pointer">
-              <input type="checkbox" checked={isFree} onChange={e => setIsFree(e.target.checked)} className="accent-blue-800" />
-              <span className="text-sm text-gray-600">Available for free download</span>
-            </label>
+            <div className="space-y-3">
+  <label className={labelClass}>
+    Access <span className="text-red-400">*</span>
+  </label>
 
-            {uploadMsg && (
+  <div className="flex flex-wrap gap-4">
+    <label className="flex items-center gap-2 cursor-pointer">
+      <input
+        type="radio"
+        name="note-access"
+        checked={isFree}
+        onChange={() => setIsFree(true)}
+        className="accent-blue-800"
+      />
+      <span className="text-sm text-gray-700">Free</span>
+    </label>
+
+    <label className="flex items-center gap-2 cursor-pointer">
+      <input
+        type="radio"
+        name="note-access"
+        checked={!isFree}
+        onChange={() => setIsFree(false)}
+        className="accent-blue-800"
+      />
+      <span className="text-sm text-gray-700">Paid</span>
+    </label>
+  </div>
+
+  {!isFree && (
+    <div>
+      <label className={labelClass}>
+        Price (₹) <span className="text-red-400">*</span>
+      </label>
+
+      <input
+        type="number"
+        min="1"
+        step="1"
+        className={inputClass}
+        placeholder="e.g. 49"
+        value={price}
+        onChange={e => setPrice(e.target.value)}
+      />
+
+      <p className="text-xs text-gray-400 mt-1">
+        Enter the selling price in Indian Rupees.
+      </p>
+    </div>
+  )}
+</div>
+
+{uploadMsg && (
               <div className={`flex items-center gap-2 text-sm rounded-lg px-4 py-3 ${uploadStatus === "success" ? "bg-green-50 text-green-700 border border-green-100" : "bg-red-50 text-red-600 border border-red-100"}`}>
                 {uploadStatus === "success" ? <CheckCircle className="w-4 h-4 flex-shrink-0" /> : <AlertCircle className="w-4 h-4 flex-shrink-0" />}
                 {uploadMsg}
@@ -445,7 +530,9 @@ function NotesTab() {
               <tr className="border-b border-gray-100 bg-gray-50">
                 <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500">Title</th>
                 <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 hidden md:table-cell">Subject</th>
-                <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 hidden lg:table-cell">Semester</th>
+                <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 hidden lg:table-cell">
+  Type
+</th>
                 <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 hidden sm:table-cell">Added</th>
                 <th className="text-right px-5 py-3 text-xs font-semibold text-gray-500">Actions</th>
               </tr>
@@ -457,7 +544,9 @@ function NotesTab() {
                   <td className="px-5 py-3.5 text-gray-500 hidden md:table-cell">
                     <span className="bg-blue-50 text-blue-700 text-xs px-2 py-0.5 rounded-full">{n.subject}</span>
                   </td>
-                  <td className="px-5 py-3.5 text-gray-400 text-xs hidden lg:table-cell">{n.semester ?? "—"}</td>
+                  <td className="px-5 py-3.5 text-gray-500 text-xs hidden lg:table-cell">
+  {n.note_type ?? "—"}
+</td>
                   <td className="px-5 py-3.5 text-gray-400 text-xs hidden sm:table-cell">
                     {new Date(n.created_at).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
                   </td>
