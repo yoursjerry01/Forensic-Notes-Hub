@@ -1,13 +1,11 @@
 import { useState, useEffect, useRef } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import {
-  Users, Mail, FileText, Eye, ArrowLeft, Lock,
+  Users, Mail, FileText, Eye, ArrowLeft,
   Upload, Trash2, BookOpen, X, AlertCircle, CheckCircle, Plus
 } from "lucide-react";
 import { getSupabase } from "../lib/supabase";
-
-const ADMIN_PASSWORD = "Anckit@0809";
 
 type DayCount = { date: string; views: number };
 type Signup = { email: string; created_at: string };
@@ -45,45 +43,6 @@ function StatCard({ icon, label, value, color }: { icon: React.ReactNode; label:
       <div>
         <p className="text-sm text-gray-500">{label}</p>
         <p className="text-2xl font-bold text-gray-900">{value}</p>
-      </div>
-    </div>
-  );
-}
-
-function LoginPage({ onLogin }: { onLogin: () => void }) {
-  const [pw, setPw] = useState("");
-  const [err, setErr] = useState(false);
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (pw === ADMIN_PASSWORD) { onLogin(); }
-    else setErr(true);
-  }
-  return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-      <div className="w-full max-w-sm">
-        <div className="text-center mb-8">
-          <img src="/logo.png" alt="Evidentia" className="mx-auto object-contain mb-4" style={{ width: "160px" }} />
-          <p className="text-sm text-gray-500">Admin Dashboard</p>
-        </div>
-        <form onSubmit={handleSubmit} className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm">
-          <div className="flex items-center gap-2 mb-6">
-            <Lock className="w-4 h-4 text-gray-400" />
-            <span className="text-sm font-semibold text-gray-700">Enter admin password</span>
-          </div>
-          <input
-            type="password" value={pw} onChange={e => setPw(e.target.value)}
-            placeholder="Password"
-            className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-700 mb-3"
-            autoFocus
-          />
-          {err && <p className="text-xs text-red-500 mb-3">Incorrect password.</p>}
-          <button type="submit" className="w-full py-2.5 rounded-lg bg-blue-800 text-white text-sm font-semibold hover:bg-blue-900 transition-colors">
-            Sign In
-          </button>
-        </form>
-        <div className="text-center mt-4">
-          <Link href="/" className="text-xs text-gray-400 hover:text-blue-700 transition-colors">← Back to site</Link>
-        </div>
       </div>
     </div>
   );
@@ -612,13 +571,89 @@ setFile(null);
 }
 
 export function Admin() {
-  const [authed, setAuthed] = useState(() => sessionStorage.getItem("ev_admin") === "1");
+  const [, navigate] = useLocation();
+  const [authChecking, setAuthChecking] = useState(true);
+  const [authed, setAuthed] = useState(false);
   const [tab, setTab] = useState<"analytics" | "notes">("analytics");
 
-  function handleLogin() { sessionStorage.setItem("ev_admin", "1"); setAuthed(true); }
-  function handleLogout() { sessionStorage.removeItem("ev_admin"); setAuthed(false); }
+  useEffect(() => {
+    const supabase = getSupabase();
+    let mounted = true;
 
-  if (!authed) return <LoginPage onLogin={handleLogin} />;
+    async function checkAdminAccess() {
+      try {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+
+        const isAdmin = session?.user?.app_metadata?.role === "admin";
+
+        if (!isAdmin) {
+          if (mounted) {
+            setAuthed(false);
+            setAuthChecking(false);
+          }
+          navigate("/auth/login");
+          return;
+        }
+
+        if (mounted) {
+          setAuthed(true);
+          setAuthChecking(false);
+        }
+      } catch (error) {
+        console.error("Admin authentication check failed:", error);
+
+        if (mounted) {
+          setAuthed(false);
+          setAuthChecking(false);
+        }
+
+        navigate("/auth/login");
+      }
+    }
+
+    checkAdminAccess();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      const isAdmin = session?.user?.app_metadata?.role === "admin";
+
+      if (!isAdmin) {
+        setAuthed(false);
+        navigate("/auth/login");
+      } else {
+        setAuthed(true);
+      }
+
+      setAuthChecking(false);
+    });
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, [navigate]);
+
+  async function handleLogout() {
+    const supabase = getSupabase();
+    await supabase.auth.signOut();
+    navigate("/auth/login");
+  }
+
+  if (authChecking) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="flex items-center gap-2 text-sm text-gray-400">
+          <span className="w-4 h-4 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin" />
+          Checking admin access…
+        </div>
+      </div>
+    );
+  }
+
+  if (!authed) return null;
 
   return (
     <div className="min-h-screen bg-gray-50">
