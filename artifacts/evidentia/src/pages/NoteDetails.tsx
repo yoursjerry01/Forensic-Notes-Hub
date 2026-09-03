@@ -49,35 +49,53 @@ export function NoteDetails() {
   const [added, setAdded] = useState(false);
 
   useEffect(() => {
-    async function loadNote() {
-      if (!params?.id) {
-        setError("Note not found.");
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const { data, error: supabaseError } = await getSupabase()
-          .from("notes")
-          .select("*")
-          .eq("id", params.id)
-          .single();
-
-        if (supabaseError) {
-          throw supabaseError;
-        }
-
-        setNote(data as Note);
-      } catch (err) {
-        console.error("Failed to load note:", err);
-        setError("Unable to load this note.");
-      } finally {
-        setLoading(false);
-      }
+  async function loadNote() {
+    if (!params?.id) {
+      setError("Note not found.");
+      setLoading(false);
+      return;
     }
 
-    loadNote();
-  }, [params?.id]);
+    try {
+      const { data, error: supabaseError } = await getSupabase()
+        .from("notes")
+        .select("*")
+        .eq("id", params.id)
+        .single();
+
+      if (supabaseError) {
+        throw supabaseError;
+      }
+
+      setNote(data as Note);
+
+      // Record note view for the logged-in user
+      const {
+        data: { session },
+      } = await getSupabase().auth.getSession();
+
+      if (session?.user) {
+        const { error: viewError } = await getSupabase()
+          .from("note_views")
+          .insert({
+            note_id: data.id,
+            user_id: session.user.id,
+          });
+
+        if (viewError) {
+          console.error("Failed to record note view:", viewError);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to load note:", err);
+      setError("Unable to load this note.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  loadNote();
+}, [params?.id]);
 
   function handleAddToCart() {
     if (!note) return;

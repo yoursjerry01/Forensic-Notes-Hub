@@ -11,6 +11,8 @@ import { Problem } from "./sections/Problem";
 import { Incentives } from "./sections/Incentives";
 import { Footer } from "./sections/Footer";
 import { Navbar } from "./components/Navbar";
+import { Testimonials } from "./sections/Testimonials";
+
 import Orders from "./pages/Orders";
 import Downloads from "./pages/Downloads";
 import Settings from "./pages/Settings";
@@ -53,6 +55,7 @@ function Home() {
       <Features />
       <Problem />
       <Incentives />
+      <Testimonials />
       <Footer />
     </div>
   );
