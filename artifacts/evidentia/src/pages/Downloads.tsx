@@ -13,6 +13,7 @@ import { getSupabase } from "../lib/supabase";
 
 type DownloadItem = {
   id: string;
+  noteId: string;
   title: string;
   fileName: string;
   fileUrl: string;
@@ -158,11 +159,43 @@ export default function Downloads() {
     });
   }
 
-  function openDownload(url: string) {
-    if (!url) return;
+ async function openDownload(
+  noteId: string,
+  url: string
+) {
+  if (!url) return;
 
-    window.open(url, "_blank", "noopener,noreferrer");
+  const supabase = getSupabase();
+
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  if (!session) {
+    navigate("/login");
+    return;
   }
+
+  const { error } = await supabase
+    .from("note_downloads")
+    .insert({
+      note_id: noteId,
+      user_id: session.user.id,
+    });
+
+  if (error) {
+    console.error(
+      "Unable to record download:",
+      error
+    );
+  }
+
+  window.open(
+    url,
+    "_blank",
+    "noopener,noreferrer"
+  );
+}
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -318,7 +351,9 @@ export default function Downloads() {
                     {/* Download */}
                     <button
                       type="button"
-                      onClick={() => openDownload(item.fileUrl)}
+                      onClick={() =>
+  openDownload(item.id, item.fileUrl)
+}
                       className="inline-flex items-center gap-2 mt-4 px-4 py-2 rounded-lg bg-blue-700 text-white text-sm font-semibold hover:bg-blue-800 transition-colors"
                     >
                       <DownloadIcon className="w-4 h-4" />

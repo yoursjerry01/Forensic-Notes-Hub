@@ -226,17 +226,20 @@ function AnalyticsTab() {
         })
         .eq("is_free", false);
 
-      const { data: revenueRows } = await supabase
-        .from("purchases")
-        .select("amount")
-        .eq("status", "completed");
+     const { data: revenueRows, error: revenueError } =
+  await supabase
+    .from("orders")
+    .select("total_amount, status")
+    .in("status", ["paid", "completed"]);
 
-      const revenue =
-        revenueRows?.reduce(
-          (sum, purchase) =>
-            sum + Number(purchase.amount || 0),
-          0
-        ) ?? 0;
+if (revenueError) throw revenueError;
+
+const revenue =
+  revenueRows?.reduce(
+    (sum, order) =>
+      sum + Number(order.total_amount || 0),
+    0
+  ) ?? 0;
 
       setTotalViews(viewsCount ?? 0);
       setTodayViews(todayViewCount ?? 0);
@@ -342,18 +345,18 @@ function AnalyticsTab() {
         end.setDate(end.getDate() + 1);
 
         const { data } = await supabase
-          .from("purchases")
-          .select("amount")
-          .eq("status", "completed")
+        .from("orders")
+.select("total_amount")
+.in("status", ["paid", "completed"])
           .gte("created_at", start.toISOString())
           .lt("created_at", end.toISOString());
 
         const dayRevenue =
-          data?.reduce(
-            (sum, purchase) =>
-              sum + Number(purchase.amount || 0),
-            0
-          ) ?? 0;
+  data?.reduce(
+    (sum, order) =>
+      sum + Number(order.total_amount || 0),
+    0
+  ) ?? 0;
 
         revenueChart.push({
           date: start.toLocaleDateString("en-IN", {
@@ -1065,72 +1068,154 @@ function UsersTab() {
     fetchUsers();
   }, []);
 
-  async function fetchUsers() {
-    setLoading(true);
-    setError("");
+ async function fetchUsers() {
+  setLoading(true);
+  setError("");
 
-    try {
-      const supabase = getSupabase();
+  try {
+    const supabase = getSupabase();
 
-      const { data, error } = await supabase
-        .from("profiles")
-        .select(`
-          id,
-          display_name,
-          email,
-          created_at,
-          status,
-          purchases (
-            id,
-            amount,
-            status,
-            created_at,
-            notes (
-              title
-            )
-          )
-        `)
-        .order("created_at", {
-          ascending: false
-        });
+    // =====================================================
+    // 1. FETCH USERS
+    // =====================================================
 
-      if (error) throw error;
+    const {
+      data: profiles,
+      error: profilesError,
+    } = await supabase
+      .from("profiles")
+      .select(`
+        id,
+        display_name,
+        email,
+        created_at,
+        status
+      `)
+      .order("created_at", {
+        ascending: false,
+      });
 
-      setUsers(data ?? []);
-
-    } catch (err) {
-      console.error(err);
-
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Could not load users."
+    if (profilesError) {
+      console.error("PROFILES ERROR:", profilesError);
+      throw new Error(
+        `Unable to load users: ${profilesError.message}`
       );
-    } finally {
-      setLoading(false);
     }
-  }
 
+    const loadedProfiles = profiles ?? [];
+
+    // If there are no users, stop here.
+    if (loadedProfiles.length === 0) {
+      setUsers([]);
+      return;
+    }
+
+    // =====================================================
+    // 2. FETCH ORDERS SEPARATELY
+    // =====================================================
+
+    const userIds = loadedProfiles.map((user) => user.id);
+
+    const {
+      data: orders,
+      error: ordersError,
+    } = await supabase
+      .from("orders")
+      .select(`
+        id,
+        user_id,
+        order_number,
+        status,
+        total_amount,
+        created_at,
+        order_items (
+          id,
+          note_id,
+          note_title,
+          unit_price,
+          quantity
+        )
+      `)
+      .in("user_id", userIds)
+      .order("created_at", {
+        ascending: false,
+      });
+
+    if (ordersError) {
+      console.error("ORDERS ERROR:", ordersError);
+      throw new Error(
+        `Unable to load purchases: ${ordersError.message}`
+      );
+    }
+
+    const loadedOrders = orders ?? [];
+
+    console.log("ADMIN PROFILES:", loadedProfiles);
+    console.log("ADMIN ORDERS:", loadedOrders);
+
+    // =====================================================
+    // 3. GROUP ORDERS BY USER
+    // =====================================================
+
+    const ordersByUser = new Map<string, any[]>();
+
+    for (const order of loadedOrders) {
+      const existing = ordersByUser.get(order.user_id) ?? [];
+
+      existing.push(order);
+
+      ordersByUser.set(order.user_id, existing);
+    }
+
+    // =====================================================
+    // 4. ATTACH ORDERS TO USERS
+    // =====================================================
+
+    const usersWithOrders = loadedProfiles.map((user) => ({
+      ...user,
+      orders: ordersByUser.get(user.id) ?? [],
+    }));
+
+    console.log("ADMIN USERS WITH ORDERS:", usersWithOrders);
+
+    setUsers(usersWithOrders);
+  } catch (err) {
+    console.error("ADMIN FETCH USERS FAILED:", err);
+
+    if (err instanceof Error) {
+      setError(err.message);
+    } else {
+      setError("Could not load users.");
+    }
+  } finally {
+    setLoading(false);
+  }
+}
   const processedUsers = users
     .map(user => {
 
-      const purchases =
-        user.purchases?.filter(
-          (p: any) =>
-            p.status === "completed"
-        ) ?? [];
+     const paidOrders =
+  user.orders?.filter(
+    (order: any) =>
+      ["paid", "completed"].includes(
+        String(order.status).toLowerCase()
+      )
+  ) ?? [];
 
-      const spent = purchases.reduce(
-        (sum: number, purchase: any) =>
-          sum + Number(purchase.amount || 0),
-        0
-      );
+const spent = paidOrders.reduce(
+  (sum: number, order: any) =>
+    sum + Number(order.total_amount || 0),
+  0
+);
 
-      return {
-        ...user,
-        purchaseCount: purchases.length,
-        spent
-      };
+const purchaseCount = paidOrders.length;
+
+return {
+  ...user,
+  orders: paidOrders,
+  purchaseCount,
+  spent
+};
     })
     .filter(user => {
 
@@ -1197,12 +1282,14 @@ function UsersTab() {
 
   }).length;
 
-  const buyers = users.filter(user =>
-    (user.purchases ?? []).some(
-      (p: any) =>
-        p.status === "completed"
-    )
-  ).length;
+ const buyers = users.filter(user =>
+  (user.orders ?? []).some(
+    (order: any) =>
+      ["paid", "completed"].includes(
+        String(order.status).toLowerCase()
+      )
+  )
+).length;
 
   function openUser(user: any) {
     setSelectedUser(user);

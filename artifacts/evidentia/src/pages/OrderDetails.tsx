@@ -289,18 +289,49 @@ export default function OrderDetails() {
     }
   }
 
-  function handleDownload(note: Note) {
-    if (!order || order.status.toLowerCase() !== "paid") {
-      return;
-    }
-
-    if (!note.file_url) {
-      alert("The study material is currently unavailable.");
-      return;
-    }
-
-    window.open(note.file_url, "_blank", "noopener,noreferrer");
+ async function handleDownload(note: Note) {
+  if (
+    !order ||
+    !["paid", "completed"].includes(
+      order.status.toLowerCase()
+    )
+  ) {
+    return;
   }
+
+  if (!note.file_url) {
+    alert("The study material is currently unavailable.");
+    return;
+  }
+
+  const supabase = getSupabase();
+
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  if (!session) {
+    navigate("/login");
+    return;
+  }
+
+  const { error } = await supabase
+    .from("note_downloads")
+    .insert({
+      note_id: note.id,
+      user_id: session.user.id,
+    });
+
+  if (error) {
+    console.error("Unable to record download:", error);
+  }
+
+  window.open(
+    note.file_url,
+    "_blank",
+    "noopener,noreferrer"
+  );
+}
 
   if (loading) {
     return (

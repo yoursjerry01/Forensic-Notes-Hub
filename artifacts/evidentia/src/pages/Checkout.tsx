@@ -84,97 +84,202 @@ export function Checkout() {
    * Free orders can still be handled without a payment gateway.
    */
   async function handleContinueToPayment() {
-    if (processing) return;
+  if (processing) return;
 
-    try {
-      setProcessing(true);
+  try {
+    setProcessing(true);
 
-      const supabase = getSupabase();
+    const supabase = getSupabase();
 
-      const {
-        data: { session },
-        error: sessionError,
-      } = await supabase.auth.getSession();
+    const {
+      data: { session },
+      error: sessionError,
+    } = await supabase.auth.getSession();
 
-      if (sessionError) {
-        throw sessionError;
-      }
-
-      if (!session?.user) {
-        navigate("/login");
-        return;
-      }
-
-      const currentCart = getCart();
-
-      if (currentCart.length === 0) {
-        navigate("/cart");
-        return;
-      }
-
-      /**
-       * Free orders do not require a payment gateway.
-       *
-       * IMPORTANT:
-       * The final free-order creation/entitlement logic should
-       * eventually be handled by a secure server-side function.
-       *
-       * For now we do not attempt to create an order directly
-       * from the browser.
-       */
-      const hasPaidItems = currentCart.some(
-        (item) => !item.is_free
-      );
-
-      if (!hasPaidItems) {
-        clearCart();
-
-        alert(
-          "Your free notes are ready.\n\n" +
-            "The payment system is currently being rebuilt."
-        );
-
-        navigate("/orders");
-        return;
-      }
-
-      /**
- * Paid checkout is intentionally stopped here.
- *
- * We will connect this button to the new payment system
- * after the new backend flow has been created and tested.
- */
-      alert(
-        "Payment checkout is temporarily unavailable while the new secure payment system is being set up.\n\n" +
-          "Please try again shortly."
-      );
-    } catch (error) {
-      console.error("Checkout failed:", error);
-
-      const message =
-        error instanceof Error
-          ? error.message
-          : "Something went wrong while starting checkout.";
-
-      alert(`Checkout failed:\n\n${message}`);
-    } finally {
-      setProcessing(false);
+    if (sessionError) {
+      throw sessionError;
     }
-  }
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-8 h-8 border-2 border-blue-700 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+    if (!session?.user) {
+      navigate("/login");
+      return;
+    }
 
-          <p className="text-sm text-gray-500">
-            Preparing your checkout...
-          </p>
-        </div>
-      </div>
-    );
+    const currentCart = getCart();
+
+    if (currentCart.length === 0) {
+      navigate("/cart");
+      return;
+    }
+
+    const paidTotal = currentCart.reduce((sum, item) => {
+      return sum + (item.is_free ? 0 : Number(item.price || 0));
+    }, 0);
+
+    // Free order
+    if (paidTotal <= 0) {
+      alert("Your free notes are ready.");
+      clearCart();
+      navigate("/orders");
+      return;
+    }
+
+    // 1. Create our Supabase order
+    const orderNumber =
+      `EVD-${Date.now()}-${crypto.randomUUID().slice(0, 8).toUpperCase()}`;
+
+    const { data: order, error: orderError } = await supabase
+      .from("orders")
+      .insert({
+        user_id: session.user.id,
+        order_number: orderNumber,
+        status: "pending",
+        subtotal: paidTotal,
+        total_amount: paidTotal,
+        currency: "INR",
+      })
+      .select("id, order_number")
+      .single();
+
+    if (orderError || !order) {
+      throw orderError || new Error("Unable to create order.");
+    }
+
+    // 2. Add the cart items to the order
+    const orderItems = currentCart.map((item) => ({
+      order_id: order.id,
+      note_id: item.id,
+      note_title: item.title,
+      unit_price: Number(item.is_free ? 0 : item.price || 0),
+      quantity: 1,
+    }));
+
+    const { error: itemsError } = await supabase
+      .from("order_items")
+      .insert(orderItems);
+
+    if (itemsError) {
+      await supabase
+        .from("orders")
+        .delete()
+        .eq("id", order.id);
+
+      throw itemsError;
+    }
+
+    // 3. Ask our Edge Function to create the Razorpay order
+    const { data: razorpayOrder, error: razorpayError } =
+      await supabase.functions.invoke("create-razorpay-order", {
+        body: {
+          orderId: order.id,
+        },
+      });
+
+    if (razorpayError || !razorpayOrder) {
+      throw razorpayError || new Error("Unable to start payment.");
+    }
+
+    // 4. Load Razorpay Checkout if it isn't already loaded
+    if (!(window as any).Razorpay) {
+      await new Promise<void>((resolve, reject) => {
+        const script = document.createElement("script");
+
+        script.src = "https://checkout.razorpay.com/v1/checkout.js";
+        script.onload = () => resolve();
+        script.onerror = () =>
+          reject(new Error("Unable to load Razorpay checkout."));
+
+        document.body.appendChild(script);
+      });
+    }
+
+    // 5. Open Razorpay
+    const options = {
+      key: razorpayOrder.keyId,
+      amount: razorpayOrder.amount,
+      currency: razorpayOrder.currency,
+      name: "Evidentia",
+      description: `Order ${razorpayOrder.orderNumber}`,
+      order_id: razorpayOrder.razorpayOrderId,
+
+      prefill: {
+        email: session.user.email || "",
+      },
+
+      theme: {
+        color: "#1d4ed8",
+      },
+
+     handler: async function (response: any) {
+  try {
+    console.log("Razorpay payment response:", response);
+
+    const { data: verificationResult, error: verificationError } =
+      await supabase.functions.invoke(
+        "verify-razorpay-payment",
+        {
+          body: {
+            orderId: order.id,
+            razorpayOrderId: response.razorpay_order_id,
+            razorpayPaymentId: response.razorpay_payment_id,
+            razorpaySignature: response.razorpay_signature,
+          },
+        }
+      );
+
+    if (verificationError || !verificationResult?.success) {
+      throw (
+        verificationError ||
+        new Error(
+          verificationResult?.error ||
+            "Payment verification failed."
+        )
+      );
+    }
+
+    setProcessing(false);
+
+    alert("Payment completed successfully!");
+
+    clearCart();
+
+    navigate("/orders");
+  } catch (error) {
+    console.error("Payment verification failed:", error);
+
+    setProcessing(false);
+
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Payment verification failed.";
+
+    alert(`Payment verification failed:\n\n${message}`);
   }
+},
+
+      modal: {
+        ondismiss: function () {
+          setProcessing(false);
+        },
+      },
+    };
+
+    const razorpay = new (window as any).Razorpay(options);
+
+    razorpay.open();
+  } catch (error) {
+    console.error("Checkout failed:", error);
+
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Something went wrong while starting checkout.";
+
+    alert(`Checkout failed:\n\n${message}`);
+    setProcessing(false);
+  }
+}
 
   return (
     <div className="min-h-screen bg-gray-50">

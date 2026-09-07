@@ -77,7 +77,7 @@ function App() {
           <Route path="/cart" component={Cart} />
           <Route path="/checkout" component={Checkout} />
           <Route path="/orders" component={Orders} />
-          <Route path="/order/:id" component={OrderDetails} />
+          <Route path="/orders/:id" component={OrderDetails} />
           <Route path="/downloads" component={Downloads} />
           <Route path="/dashboard" component={StudentDashboard} />
           <Route path="/settings" component={Settings} />
