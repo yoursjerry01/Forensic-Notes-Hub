@@ -168,12 +168,32 @@ export function Checkout() {
     }
 
     // 3. Ask our Edge Function to create the Razorpay order
-    const { data: razorpayOrder, error: razorpayError } =
-      await supabase.functions.invoke("create-razorpay-order", {
-        body: {
-          orderId: order.id,
-        },
-      });
+
+console.log("SUPABASE ORDER CREATED:", order);
+console.log("SUPABASE ORDER ID:", order?.id);
+
+if (!order?.id) {
+  throw new Error(
+    "Order was created, but no Supabase order ID was returned."
+  );
+}
+
+const { data: razorpayOrder, error: razorpayError } =
+  await supabase.functions.invoke("create-razorpay-order", {
+    body: {
+      orderId: order.id,
+    },
+  });
+
+console.log("RAZORPAY FUNCTION RESPONSE:", razorpayOrder);
+console.log("RAZORPAY FUNCTION ERROR:", razorpayError);
+
+if (razorpayError || !razorpayOrder) {
+  throw (
+    razorpayError ||
+    new Error("Unable to start payment.")
+  );
+}
 
     if (razorpayError || !razorpayOrder) {
       throw razorpayError || new Error("Unable to start payment.");
