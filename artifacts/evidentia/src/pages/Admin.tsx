@@ -2732,36 +2732,47 @@ const [price, setPrice] = useState("");
       }
 
       // Update database.
-      const { error: dbErr } = await supabase
-        .from("notes")
-        .update({
-          title: title.trim(),
-          subject,
-          description: description.trim() || null,
-          note_type: noteType,
-          course: course.trim() || null,
-          tags,
-          is_free: isFree,
-          price: isFree ? null : Number(price),
-          file_url: fileUrl,
-          file_name: fileName
-        })
-        .eq("id", editingNote.id);
+     const { data: updatedNote, error: dbErr } = await supabase
+  .from("notes")
+  .update({
+    title: title.trim(),
+    subject,
+    description: description.trim() || null,
+    note_type: noteType,
+    course: course.trim() || null,
+    tags,
+    is_free: isFree,
+    price: isFree ? null : Number(price),
+    file_url: fileUrl,
+    file_name: fileName
+  })
+  .eq("id", editingNote.id)
+  .select()
+  .single();
 
-      if (dbErr) {
-        // If a new file was uploaded but DB update failed,
-        // remove the newly uploaded file.
-        if (newFilePath) {
-          await supabase.storage
-            .from("notes_files")
-            .remove([newFilePath]);
-        }
+if (dbErr) {
+  if (newFilePath) {
+    await supabase.storage
+      .from("notes_files")
+      .remove([newFilePath]);
+  }
 
-        throw new Error(
-          `Could not update note: ${dbErr.message}`
-        );
-      }
+  throw new Error(
+    `Could not update note: ${dbErr.message}`
+  );
+}
 
+if (!updatedNote) {
+  if (newFilePath) {
+    await supabase.storage
+      .from("notes_files")
+      .remove([newFilePath]);
+  }
+
+  throw new Error(
+    "Note was not updated. Supabase did not return an updated record. Check the UPDATE policy for the notes table."
+  );
+}
       // If the file was replaced, delete the old file.
       if (newFilePath && editingNote.file_url) {
         const oldPath = editingNote.file_url.split(

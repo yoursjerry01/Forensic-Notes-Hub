@@ -31,57 +31,51 @@ export default function Downloads() {
     let mounted = true;
 
     async function loadDownloads() {
-      try {
-        const supabase = getSupabase();
+  try {
+    const supabase = getSupabase();
 
-        // Check logged-in student
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
 
-        if (!session) {
-          navigate("/login");
-          return;
-        }
+    if (!session) {
+      navigate("/login");
+      return;
+    }
 
-        // Get student's paid/completed orders
-        const { data: orders, error: ordersError } = await supabase
-          .from("orders")
-          .select("id, created_at, status")
-          .eq("user_id", session.user.id)
-          .in("status", ["paid", "completed"])
-          .order("created_at", { ascending: false });
+    /*
+     * =====================================================
+     * 1. PAID NOTES
+     * =====================================================
+     */
 
-        if (ordersError) {
-          throw ordersError;
-        }
+    const { data: orders, error: ordersError } = await supabase
+      .from("orders")
+      .select("id, created_at, status")
+      .eq("user_id", session.user.id)
+      .in("status", ["paid", "completed"])
+      .order("created_at", { ascending: false });
 
-        if (!orders || orders.length === 0) {
-          if (mounted) {
-            setDownloads([]);
-          }
-          return;
-        }
+    if (ordersError) {
+      throw ordersError;
+    }
 
-        const orderIds = orders.map((order) => order.id);
+    const paidDownloads: DownloadItem[] = [];
 
-        // Get items belonging to those orders
-        const { data: orderItems, error: itemsError } = await supabase
+    if (orders && orders.length > 0) {
+      const orderIds = orders.map((order) => order.id);
+
+      const { data: orderItems, error: itemsError } =
+        await supabase
           .from("order_items")
           .select("id, order_id, note_id")
           .in("order_id", orderIds);
 
-        if (itemsError) {
-          throw itemsError;
-        }
+      if (itemsError) {
+        throw itemsError;
+      }
 
-        if (!orderItems || orderItems.length === 0) {
-          if (mounted) {
-            setDownloads([]);
-          }
-          return;
-        }
-
+      if (orderItems && orderItems.length > 0) {
         const noteIds = [
           ...new Set(
             orderItems
@@ -90,57 +84,157 @@ export default function Downloads() {
           ),
         ];
 
-        // Get purchased notes
-        const { data: notes, error: notesError } = await supabase
-          .from("notes")
-          .select("id, title, file_name, file_url")
-          .in("id", noteIds);
+        if (noteIds.length > 0) {
+          const { data: notes, error: notesError } =
+            await supabase
+              .from("notes")
+              .select(
+                "id, title, file_name, file_url"
+              )
+              .in("id", noteIds);
 
-        if (notesError) {
-          throw notesError;
-        }
+          if (notesError) {
+            throw notesError;
+          }
 
-        const noteMap = new Map(
-          (notes ?? []).map((note) => [note.id, note])
-        );
+          const noteMap = new Map(
+            (notes ?? []).map((note) => [
+              note.id,
+              note,
+            ])
+          );
 
-        const orderDateMap = new Map(
-          orders.map((order) => [order.id, order.created_at])
-        );
+          const orderDateMap = new Map(
+            orders.map((order) => [
+              order.id,
+              order.created_at,
+            ])
+          );
 
-        const result: DownloadItem[] = orderItems
-          .map((item) => {
+          for (const item of orderItems) {
             const note = noteMap.get(item.note_id);
 
-            if (!note) return null;
+            if (!note) continue;
 
-            return {
-              id: item.id,
+            paidDownloads.push({
+              id: `paid-${item.id}`,
+              noteId: item.note_id,
               title: note.title,
               fileName: note.file_name,
               fileUrl: note.file_url,
-              purchasedAt: orderDateMap.get(item.order_id) ?? "",
-            };
-          })
-          .filter(Boolean) as DownloadItem[];
-
-        if (mounted) {
-          setDownloads(result);
-        }
-      } catch (err) {
-        console.error("Unable to load downloads:", err);
-
-        if (mounted) {
-          setError(
-            "Unable to load your downloads. Please try again."
-          );
-        }
-      } finally {
-        if (mounted) {
-          setLoading(false);
+              purchasedAt:
+                orderDateMap.get(item.order_id) ?? "",
+            });
+          }
         }
       }
     }
+
+    /*
+     * =====================================================
+     * 2. FREE NOTES
+     * =====================================================
+     */
+
+    const { data: freeSaves, error: freeError } =
+      await supabase
+        .from("free_note_saves")
+        .select(
+          "id, note_id, created_at"
+        )
+        .eq("user_id", session.user.id)
+        .order("created_at", {
+          ascending: false,
+        });
+
+    if (freeError) {
+      throw freeError;
+    }
+
+    const freeDownloads: DownloadItem[] = [];
+
+    if (freeSaves && freeSaves.length > 0) {
+      const freeNoteIds = [
+        ...new Set(
+          freeSaves
+            .map((item) => item.note_id)
+            .filter(Boolean)
+        ),
+      ];
+
+      if (freeNoteIds.length > 0) {
+        const { data: freeNotes, error: freeNotesError } =
+          await supabase
+            .from("notes")
+            .select(
+              "id, title, file_name, file_url"
+            )
+            .in("id", freeNoteIds);
+
+        if (freeNotesError) {
+          throw freeNotesError;
+        }
+
+        const freeNoteMap = new Map(
+          (freeNotes ?? []).map((note) => [
+            note.id,
+            note,
+          ])
+        );
+
+        for (const save of freeSaves) {
+          const note = freeNoteMap.get(save.note_id);
+
+          if (!note) continue;
+
+          freeDownloads.push({
+            id: `free-${save.id}`,
+            noteId: save.note_id,
+            title: note.title,
+            fileName: note.file_name,
+            fileUrl: note.file_url,
+            purchasedAt: save.created_at,
+          });
+        }
+      }
+    }
+
+    /*
+     * =====================================================
+     * 3. COMBINE
+     * =====================================================
+     */
+
+    const combined = [
+      ...paidDownloads,
+      ...freeDownloads,
+    ].sort(
+      (a, b) =>
+        new Date(b.purchasedAt).getTime() -
+        new Date(a.purchasedAt).getTime()
+    );
+
+    if (mounted) {
+      setDownloads(combined);
+    }
+
+  } catch (err) {
+    console.error(
+      "Unable to load downloads:",
+      err
+    );
+
+    if (mounted) {
+      setError(
+        "Unable to load your downloads. Please try again."
+      );
+    }
+  } finally {
+    if (mounted) {
+      setLoading(false);
+    }
+  }
+}
 
     loadDownloads();
 
@@ -251,7 +345,7 @@ export default function Downloads() {
               </h1>
 
               <p className="text-gray-500 mt-1">
-                Access the study notes you have purchased.
+                 Access your purchased and saved study notes.
               </p>
             </div>
 
@@ -300,8 +394,8 @@ export default function Downloads() {
             </h2>
 
             <p className="text-gray-500 mt-2 max-w-md mx-auto">
-              Your purchased study notes will appear here after
-              your payment is successfully completed.
+             Notes you purchase or save for free will appear here
+for easy access anytime.
             </p>
 
             <Link
@@ -345,14 +439,14 @@ export default function Downloads() {
 
                     <div className="flex items-center gap-1.5 text-sm text-gray-500 mt-3">
                       <CalendarDays className="w-4 h-4" />
-                      Purchased {formatDate(item.purchasedAt)}
+                      Added {formatDate(item.purchasedAt)}
                     </div>
 
                     {/* Download */}
                     <button
                       type="button"
-                      onClick={() =>
-  openDownload(item.id, item.fileUrl)
+                     onClick={() =>
+  openDownload(item.noteId, item.fileUrl)
 }
                       className="inline-flex items-center gap-2 mt-4 px-4 py-2 rounded-lg bg-blue-700 text-white text-sm font-semibold hover:bg-blue-800 transition-colors"
                     >

@@ -6,6 +6,8 @@ import {
   ShoppingCart,
   Loader2,
   Check,
+  Download,
+  FolderDown,
 } from "lucide-react";
 import { getSupabase } from "../lib/supabase";
 import { addToCart } from "../lib/cart";
@@ -40,62 +42,127 @@ const SUBJECT_COLORS: Record<string, string> = {
 };
 
 export function NoteDetails() {
-  const [, params] = useRoute("/note/:id");
+  const [, params] = useRoute("/notes/:id");
   const [, navigate] = useLocation();
 
   const [note, setNote] = useState<Note | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+
   const [added, setAdded] = useState(false);
 
   useEffect(() => {
-  async function loadNote() {
-    if (!params?.id) {
-      setError("Note not found.");
-      setLoading(false);
-      return;
+    async function loadNote() {
+      if (!params?.id) {
+        setError("Note not found.");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const supabase = getSupabase();
+
+        const { data, error: supabaseError } = await supabase
+          .from("notes")
+          .select("*")
+          .eq("id", params.id)
+          .single();
+
+        if (supabaseError) {
+          throw supabaseError;
+        }
+
+        setNote(data as Note);
+
+        // Record note view
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+
+        if (session?.user) {
+          const { error: viewError } = await supabase
+            .from("note_views")
+            .insert({
+              note_id: data.id,
+              user_id: session.user.id,
+            });
+
+          if (viewError) {
+            console.error(
+              "Failed to record note view:",
+              viewError
+            );
+          }
+
+          // Check whether this free note is already saved
+          if (data.is_free) {
+            const { data: existingSave } = await supabase
+              .from("free_note_saves")
+              .select("id")
+              .eq("note_id", data.id)
+              .eq("user_id", session.user.id)
+              .maybeSingle();
+
+            if (existingSave) {
+              setSaved(true);
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Failed to load note:", err);
+        setError("Unable to load this note.");
+      } finally {
+        setLoading(false);
+      }
     }
+
+    loadNote();
+  }, [params?.id]);
+
+  async function handleSaveFreeNote() {
+    if (!note || !note.is_free) return;
+
+    setSaving(true);
 
     try {
-      const { data, error: supabaseError } = await getSupabase()
-        .from("notes")
-        .select("*")
-        .eq("id", params.id)
-        .single();
+      const supabase = getSupabase();
 
-      if (supabaseError) {
-        throw supabaseError;
-      }
-
-      setNote(data as Note);
-
-      // Record note view for the logged-in user
       const {
         data: { session },
-      } = await getSupabase().auth.getSession();
+      } = await supabase.auth.getSession();
 
-      if (session?.user) {
-        const { error: viewError } = await getSupabase()
-          .from("note_views")
-          .insert({
-            note_id: data.id,
-            user_id: session.user.id,
-          });
-
-        if (viewError) {
-          console.error("Failed to record note view:", viewError);
-        }
+      if (!session) {
+        navigate("/login");
+        return;
       }
+
+      const { error: saveError } = await supabase
+        .from("free_note_saves")
+        .upsert(
+          {
+            user_id: session.user.id,
+            note_id: note.id,
+          },
+          {
+            onConflict: "user_id,note_id",
+          }
+        );
+
+      if (saveError) {
+        throw saveError;
+      }
+
+      setSaved(true);
     } catch (err) {
-      console.error("Failed to load note:", err);
-      setError("Unable to load this note.");
+      console.error("Unable to save free note:", err);
+      setError("Unable to save this note. Please try again.");
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
   }
-
-  loadNote();
-}, [params?.id]);
 
   function handleAddToCart() {
     if (!note) return;
@@ -162,7 +229,8 @@ export function NoteDetails() {
   }
 
   const badgeColor =
-    SUBJECT_COLORS[note.subject] ?? "bg-cyan-100 text-cyan-800";
+    SUBJECT_COLORS[note.subject] ??
+    "bg-cyan-100 text-cyan-800";
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -223,7 +291,7 @@ export function NoteDetails() {
             {note.description && (
               <section>
                 <h2 className="text-lg font-bold text-gray-900 mb-4">
-                  Topics Covered
+                  About This Note
                 </h2>
 
                 <div className="text-gray-600 leading-7 whitespace-pre-line">
@@ -241,7 +309,7 @@ export function NoteDetails() {
 
               <div className="min-w-0">
                 <p className="font-semibold text-gray-900">
-                  Study Notes PDF
+                  Study Notes
                 </p>
 
                 {note.file_name && (
@@ -276,26 +344,67 @@ export function NoteDetails() {
                   </p>
                 </div>
 
-                {/* Cart Button */}
-                <button
-                  type="button"
-                  onClick={handleAddToCart}
-                  className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl bg-blue-700 text-white font-semibold hover:bg-blue-800 transition-colors"
-                >
-                  {added ? (
-                    <>
-                      <Check className="w-5 h-5" />
-                      Added to Cart
-                    </>
-                  ) : (
-                    <>
-                      <ShoppingCart className="w-5 h-5" />
-                      {note.is_free
-                        ? "Get Free Note"
-                        : "Add to Cart"}
-                    </>
-                  )}
-                </button>
+                {/* FREE NOTE */}
+                {note.is_free ? (
+                  <div className="flex flex-col sm:flex-row gap-3">
+
+                    {saved ? (
+                      <>
+                        <div className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-green-50 border border-green-200 text-green-700 font-semibold">
+                          <Check className="w-5 h-5" />
+                          Saved to My Downloads
+                        </div>
+
+                        <Link
+                          href="/downloads"
+                          className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-blue-700 text-white font-semibold hover:bg-blue-800 transition-colors"
+                        >
+                          <FolderDown className="w-5 h-5" />
+                          My Downloads
+                        </Link>
+                      </>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={handleSaveFreeNote}
+                        disabled={saving}
+                        className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl bg-blue-700 text-white font-semibold hover:bg-blue-800 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+                      >
+                        {saving ? (
+                          <>
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                            Saving...
+                          </>
+                        ) : (
+                          <>
+                            <Download className="w-5 h-5" />
+                            Save to My Downloads
+                          </>
+                        )}
+                      </button>
+                    )}
+
+                  </div>
+                ) : (
+                  /* PAID NOTE */
+                  <button
+                    type="button"
+                    onClick={handleAddToCart}
+                    className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl bg-blue-700 text-white font-semibold hover:bg-blue-800 transition-colors"
+                  >
+                    {added ? (
+                      <>
+                        <Check className="w-5 h-5" />
+                        Added to Cart
+                      </>
+                    ) : (
+                      <>
+                        <ShoppingCart className="w-5 h-5" />
+                        Add to Cart
+                      </>
+                    )}
+                  </button>
+                )}
 
               </div>
 

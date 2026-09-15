@@ -128,7 +128,7 @@ function NoteCard({ note, index }: { note: Note; index: number }) {
   </span>
 
   <Link
-    href={`/note/${note.id}`}
+    href={`/notes/${note.id}`}
     className="inline-flex items-center gap-1.5 text-sm font-semibold text-blue-700 hover:text-blue-900 transition-colors"
   >
     {note.is_free ? (
@@ -198,7 +198,7 @@ return matchSearch && matchSubject && matchType;
           <Link href="/" className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-blue-800 transition-colors">
             <ArrowLeft className="w-4 h-4" /> Back
           </Link>
-          <Link href="/">
+          <Link href="/notes">
             <img src="/logo.png" alt="Evidentia" className="object-contain cursor-pointer" style={{ width: "140px" }} />
           </Link>
           <Link

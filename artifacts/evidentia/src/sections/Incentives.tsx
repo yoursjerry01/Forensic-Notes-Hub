@@ -5,20 +5,20 @@ const benefits = [
   {
     icon: <Zap className="w-7 h-7 text-cyan-400" />,
     number: "01",
-    title: "Early Access",
-    description: "Get full access to all notes before anyone else — before the public launch.",
+    title: "Structured Learning",
+    description: "Find notes organized by subject, year, semester, and topic, so you always know where to start.",
   },
   {
     icon: <Tag className="w-7 h-7 text-cyan-400" />,
     number: "02",
-    title: "Launch Pricing",
-    description: "Lock in the lowest price we'll ever offer. Early supporters get the best deal.",
+    title: "Exam-Focused Content",
+    description: "Study detailed explanations for deeper understanding and concise notes for quick revision before exams.",
   },
   {
     icon: <BookOpenCheck className="w-7 h-7 text-cyan-400" />,
     number: "03",
-    title: "Free Sample Notes",
-    description: "Download free sample notes immediately after joining the waitlist.",
+    title: "Study Anywhere",
+    description: "Access your notes online or download PDFs for focused offline study, anytime.",
   },
 ];
 
@@ -34,10 +34,10 @@ export function Incentives() {
           className="text-center mb-16"
         >
           <span className="inline-block text-xs font-semibold tracking-widest uppercase text-cyan-400 mb-4">
-            Why Join Early
+            WHY EVIDENTIA
           </span>
           <h2 className="text-3xl md:text-4xl font-bold text-white">
-            The waitlist has its perks.
+            Everything you need to study smarter.
           </h2>
         </motion.div>
 

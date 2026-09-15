@@ -71,7 +71,7 @@ function App() {
           {/* Main website */}
           <Route path="/" component={Home} />
           <Route path="/notes" component={Notes} />
-          <Route path="/note/:id" component={NoteDetails} />
+          <Route path="/notes/:id" component={NoteDetails} />
           <Route path="/submit-syllabus" component={SubmitSyllabus} />
           <Route path="/admin" component={Admin} />
           <Route path="/cart" component={Cart} />

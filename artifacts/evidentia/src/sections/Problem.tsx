@@ -2,15 +2,15 @@ import { motion } from "framer-motion";
 import { X, Check } from "lucide-react";
 
 const problems = [
-  "Scattered notes waste your time.",
-  "Material is incomplete or too complex.",
-  "No structure for exam preparation.",
+  "Notes scattered across different sources",
+  "Difficult-to-revise material",
+  "No consistent academic structure",
 ];
 
 const solutions = [
-  "Subject & semester-wise organisation.",
-  "Clear, distilled, exam-focused content.",
-  "Built around how students actually study.",
+  "Organized by subject and semester",
+  "Detailed + quick-revision content",
+  "Designed around exam preparation",
 ];
 
 export function Problem() {
@@ -41,7 +41,7 @@ export function Problem() {
             transition={{ duration: 0.55, ease: "easeOut" }}
             className="rounded-2xl bg-gray-50 border border-gray-200 p-8"
           >
-            <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-6">Without Evidentia</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-6">Traditional study</p>
             <ul className="space-y-4">
               {problems.map((p, i) => (
                 <motion.li
@@ -97,7 +97,7 @@ export function Problem() {
           transition={{ duration: 0.5, delay: 0.3 }}
           className="text-center text-gray-500 text-sm mt-10"
         >
-          Evidentia is built for forensic science students who want to study smarter, not harder.
+          Spend less time organizing what to study, and more time actually studying.
         </motion.p>
       </div>
     </section>

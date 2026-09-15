@@ -226,14 +226,15 @@ export default function OrderDetails() {
   function getStatus(status: string) {
     switch (status.toLowerCase()) {
       case "paid":
-        return {
-          label: "Paid",
-          wrapper: "bg-green-50 text-green-700",
-          dot: "bg-green-500",
-          icon: CheckCircle2,
-          message:
-            "Payment successful. Your purchased notes are available.",
-        };
+case "completed":
+  return {
+    label: "Completed",
+    wrapper: "bg-green-50 text-green-700",
+    dot: "bg-green-500",
+    icon: CheckCircle2,
+    message:
+      "Order completed. Your purchased notes are available.",
+  };
 
       case "pending":
         return {
@@ -397,7 +398,9 @@ export default function OrderDetails() {
   const status = getStatus(order.status);
   const StatusIcon = status.icon;
 
-  const isPaid = order.status.toLowerCase() === "paid";
+  const isPaid = ["paid", "completed"].includes(
+  order.status.toLowerCase()
+);
 
   return (
     <div className="min-h-screen bg-gray-50">

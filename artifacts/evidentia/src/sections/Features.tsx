@@ -18,7 +18,7 @@ const features = [
     description: "In-depth explanations paired with rapid-revision summaries.",
   },
   {
-    title: "Instant downloadable PDFs",
+    title: "Download & Study Offline",
     icon: <Download className="w-6 h-6 text-blue-800" />,
     description: "Access your materials offline, anywhere, anytime.",
   },
