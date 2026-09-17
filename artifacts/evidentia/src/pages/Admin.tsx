@@ -2585,6 +2585,7 @@ function NotesTab() {
 
   const [title, setTitle] = useState("");
   const [subject, setSubject] = useState("");
+  const [customSubject, setCustomSubject] = useState("");
   const [description, setDescription] = useState("");
   const [noteType, setNoteType] = useState("");
 const [course, setCourse] = useState("");
@@ -2652,11 +2653,20 @@ const [price, setPrice] = useState("");
   async function handleUpload(e: React.FormEvent) {
   e.preventDefault();
 
-  if (!title.trim() || !subject || !noteType) {
-    setUploadMsg("Title, subject, and note type are required.");
-    setUploadStatus("error");
-    return;
-  }
+  if (
+  !title.trim() ||
+  !subject ||
+  !noteType ||
+  (subject === "Other" && !customSubject.trim())
+) {
+  setUploadMsg(
+    subject === "Other"
+      ? "Please enter the subject name."
+      : "Title, subject, and note type are required."
+  );
+  setUploadStatus("error");
+  return;
+}
 
   if (!isFree) {
     const numericPrice = Number(price);
@@ -2687,6 +2697,11 @@ const [price, setPrice] = useState("");
           .map(t => t.trim())
           .filter(Boolean)
       : null;
+
+      const finalSubject =
+  subject === "Other"
+    ? customSubject.trim()
+    : subject;
 
     /*
      * =========================
@@ -2736,7 +2751,7 @@ const [price, setPrice] = useState("");
   .from("notes")
   .update({
     title: title.trim(),
-    subject,
+   subject: finalSubject,
     description: description.trim() || null,
     note_type: noteType,
     course: course.trim() || null,
@@ -2841,7 +2856,7 @@ if (!updatedNote) {
       .from("notes")
       .insert({
         title: title.trim(),
-        subject,
+        subject: finalSubject,
         description: description.trim() || null,
         note_type: noteType,
         course: course.trim() || null,
@@ -2863,6 +2878,7 @@ if (!updatedNote) {
 
     setTitle("");
     setSubject("");
+    setCustomSubject("");
     setDescription("");
     setNoteType("");
     setCourse("");
@@ -2947,6 +2963,7 @@ function closeForm() {
 
   setTitle("");
   setSubject("");
+  setCustomSubject("");
   setDescription("");
   setNoteType("");
   setCourse("");
@@ -3021,12 +3038,41 @@ function closeForm() {
                 <input className={inputClass} placeholder="e.g. Forensic Toxicology Unit 2" value={title} onChange={e => setTitle(e.target.value)} />
               </div>
               <div>
-                <label className={labelClass}>Subject <span className="text-red-400">*</span></label>
-                <select className={inputClass} value={subject} onChange={e => setSubject(e.target.value)}>
-                  <option value="">Select subject</option>
-                  {SUBJECTS.map(s => <option key={s}>{s}</option>)}
-                </select>
-              </div>
+  <label className={labelClass}>
+    Subject <span className="text-red-400">*</span>
+  </label>
+
+  <select
+    className={inputClass}
+    value={subject}
+    onChange={e => {
+      const value = e.target.value;
+      setSubject(value);
+
+      if (value !== "Other") {
+        setCustomSubject("");
+      }
+    }}
+  >
+    <option value="">Select subject</option>
+    {SUBJECTS.map(s => (
+      <option key={s} value={s}>
+        {s}
+      </option>
+    ))}
+  </select>
+
+  {subject === "Other" && (
+    <input
+      type="text"
+      className={`${inputClass} mt-3`}
+      placeholder="Enter subject name"
+      value={customSubject}
+      onChange={e => setCustomSubject(e.target.value)}
+      required
+    />
+  )}
+</div>
             </div>
 
             <div>
